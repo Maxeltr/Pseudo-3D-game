@@ -23,22 +23,19 @@
  */
 
 define(function () {
-    function Bitmap(src, width, height, hFrameSize, vFrameSize, onload, front, back, left, right) {
+    function Bitmap(src, width, height, frameWidth, frameHeight, onload) {
         this.width = width;
         this.height = height;
         this.isLoaded;
         this.onload = onload;
         this.src = src;
-        this.vFrameSize = vFrameSize;
-        this.hFrameSize = hFrameSize;
-        this.front = front;
-        this.back = back;
-        this.left = left;
-        this.right = right;
+        this.frameHeight = frameHeight;
+        this.frameWidth = frameWidth;
         this.image = new Image();
 
         this.load();
-    };
+    }
+    ;
 
     Bitmap.prototype.load = function (onload, src) {
         let self = this;
@@ -53,8 +50,8 @@ define(function () {
     };
 
     return {
-        createBitmap: function(src, width, height, hFrameSize, vFrameSize, onload, front, back, left, right) {
-            return new Bitmap(src, width, height, hFrameSize, vFrameSize, onload, front, back, left, right);
+        createBitmap: function (src, width, height, frameWidth, frameHeight, onload) {
+            return new Bitmap(src, width, height, frameWidth, frameHeight, onload);
         }
     };
 });

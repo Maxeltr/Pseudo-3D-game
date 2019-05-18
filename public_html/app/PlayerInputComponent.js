@@ -1,4 +1,4 @@
-/* 
+/*
  * The MIT License
  *
  * Copyright 2019 Maxim Eltratov <Maxim.Eltratov@yandex.ru>.
@@ -23,46 +23,49 @@
  */
 
 define(function () {
-	function PlayerInputComponent(moveForwardCommand, moveBackwardCommand, rotateLeftCommand, rotateRightCommand) {
-		this.codes = { 37: 'left', 39: 'right', 38: 'forward', 40: 'backward' };
-        this.states = { 'left': false, 'right': false, 'forward': false, 'backward': false };
-		this.buttonForward = moveForwardCommand;
-		this.buttonBackward = moveBackwardCommand;
-		this.buttonLeft = rotateLeftCommand;
-		this.buttonRight = rotateRightCommand;
-		
-        document.addEventListener('keydown', this.onKey.bind(this, true), false);
-        document.addEventListener('keyup', this.onKey.bind(this, false), false);
-	}
-	
-	PlayerInputComponent.prototype.onKey = function (val,e) {
-		let state = this.codes[e.keyCode];
-		if (typeof state === 'undefined')
-			return;
-		this.states[state] = val;
-		e.preventDefault && e.preventDefault();
-		e.stopPropagation && e.stopPropagation();
-	};
-	
-	PlayerInputComponent.prototype.handleInput = function () {
-		let buttons = [];
-		
-		if (this.states.left)
-			buttons.push(this.buttonLeft);
-		if (this.states.right)
-			buttons.push(this.buttonRight);
-		if (this.states.forward)
-			buttons.push(this.buttonForward);
-		if (this.states.backward)
-			buttons.push(this.buttonBackward);
-		
-		return buttons;
-	};
-	
-	return {
-        createPlayerInputComponent: function(moveForwardCommand, moveBackwardCommand, rotateLeftCommand, rotateRightCommand) {
-            return new PlayerInputComponent(moveForwardCommand, moveBackwardCommand, rotateLeftCommand, rotateRightCommand);
+    function PlayerInputComponent(up, down, left, right, space) {
+        this.codes = {37: 'left', 39: 'right', 38: 'forward', 40: 'backward', 32: 'space'};
+        this.states = {'left': false, 'right': false, 'forward': false, 'backward': false, 'space': false};
+        this.buttonUp = up;
+        this.buttonDown = down;
+        this.buttonLeft = left;
+        this.buttonRight = right;
+        this.buttonSpace = space;
+
+        document.addEventListener('keydown', this._onKey.bind(this, true), false);
+        document.addEventListener('keyup', this._onKey.bind(this, false), false);
+    }
+
+    PlayerInputComponent.prototype._onKey = function (val, e) {
+        let state = this.codes[e.keyCode];
+        if (typeof state === 'undefined')
+            return;
+        this.states[state] = val;
+        e.preventDefault && e.preventDefault();
+        e.stopPropagation && e.stopPropagation();
+    };
+
+    PlayerInputComponent.prototype.handleInput = function () {
+        let buttons = [];
+
+        if (this.states.left)
+            buttons.push(this.buttonLeft);
+        if (this.states.right)
+            buttons.push(this.buttonRight);
+        if (this.states.forward)
+            buttons.push(this.buttonUp);
+        if (this.states.backward)
+            buttons.push(this.buttonDown);
+        if (this.states.space)
+            buttons.push(this.buttonSpace);
+
+        return buttons;
+    };
+
+    return {
+        createPlayerInputComponent: function (up, down, left, right, space) {
+            return new PlayerInputComponent(up, down, left, right, space);
         },
-		PlayerInputComponent: PlayerInputComponent
+        PlayerInputComponent: PlayerInputComponent
     };
 });

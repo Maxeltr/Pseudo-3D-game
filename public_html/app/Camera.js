@@ -100,7 +100,7 @@ define(function () {
 
     Camera.prototype.clearScreen = function () {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    }
+    };
 
     Camera.prototype.drawWalls = function (x, y, direction, fov, map, bitmap) {
         let angle = 0.0, ray, columnHeight, columnTop, textureX, leftEdge, angleBetweenRays;
@@ -121,25 +121,73 @@ define(function () {
         this.context.restore();
     };
 
+    Camera.prototype.drawObjects = function (objects, x, y, direction, fov) {
+        objects.sort(function (objectA, objectB) {
+            return Math.sqrt(Math.pow(x - objectB.x, 2) + Math.pow(y - objectB.y, 2))
+                    - Math.sqrt(Math.pow(x - objectA.x, 2) + Math.pow(y - objectA.y, 2));
+        });
+
+        for (let i = 0; i < objects.length; i++) {
+            this.drawObject(objects[i], x, y, direction, fov);
+        }
+    };
+
+    Camera.prototype.drawObject = function (object, x, y, direction, fov) {
+        let directionToObject, objectProjectionSize, distanceBetweenObjectAndCamera;
+        let hOffsetOnProjection, vOffsetOnProjection, hObjectScaleRatio;
+        let graphicsComponent = object.getGraphics();
+
+        directionToObject = Math.atan2(object.y - y, object.x - x);						// absolute direction from the player(!) to the sprite(!) (in radians)
+        while (directionToObject - direction > Math.PI)
+            directionToObject -= 2 * Math.PI; 													// remove unncesessary periods from the relative direction
+        while (directionToObject - direction < - Math.PI)
+            directionToObject += 2 * Math.PI;
+
+        distanceBetweenObjectAndCamera = Math.sqrt(Math.pow(x - object.x, 2) + Math.pow(y - object.y, 2));
+
+        objectProjectionSize = Math.min(500, Math.floor(this.height / distanceBetweenObjectAndCamera));
+        hOffsetOnProjection = Math.floor((directionToObject - direction) * this.width / fov + this.width / 2 - objectProjectionSize / 2);
+        vOffsetOnProjection = this.height / 2 - Math.floor(objectProjectionSize / 2);
+        hObjectScaleRatio = graphicsComponent.getFrameWidth() / objectProjectionSize;
+
+        for (let i = 0; i < objectProjectionSize; i++) {
+            if ((hOffsetOnProjection + i) < 0 || this.depthBuffer[hOffsetOnProjection + i] < distanceBetweenObjectAndCamera)
+                continue;
+            if ((hOffsetOnProjection + i) >= this.width)
+                break;
+            this.context.drawImage(
+                    graphicsComponent.getImage(),
+                    graphicsComponent.getImageX() + i * hObjectScaleRatio,
+                    graphicsComponent.getImageY(direction - object.direction),
+                    1,
+                    graphicsComponent.getFrameHeight(),
+                    hOffsetOnProjection + i,
+                    vOffsetOnProjection,
+                    1,
+                    objectProjectionSize
+                    );
+        }
+    };
+
     Camera.prototype._getTextureX = function (ray, bitmap) {
         let hitX, hitY, textureX;
 
         hitX = ray.x - Math.floor(ray.x + 0.5);                                                   //get fractional part of x
         hitY = ray.y - Math.floor(ray.y + 0.5);                                                   //get fractional part of y
-        textureX = hitX * bitmap.hFrameSize;
+        textureX = hitX * bitmap.frameWidth;
         if (Math.abs(hitY) > Math.abs(hitX))
-            textureX = hitY * bitmap.vFrameSize;
+            textureX = hitY * bitmap.frameHeight;
         if (textureX < 0)
-            textureX += bitmap.hFrameSize;
+            textureX += bitmap.frameWidth;
 
-        return ray.barrier * bitmap.hFrameSize + textureX;
+        return ray.barrier * bitmap.frameWidth + textureX;
     };
 
     Camera.prototype.drawFovsOnMap = function (objects, map, color) {
         for (let j = 0; j < objects.length; j++) {
             this.drawFovOnMap(objects[j], map, color);
         }
-    }
+    };
 
     Camera.prototype.drawFovOnMap = function (object, map, color) {
         let left, right, rays = [], step = 0.5;
@@ -151,13 +199,13 @@ define(function () {
         rays.push(map.castRay(object.x, object.y, object.direction, right, step, true));
 
         this.drawRaysOnMap(rays, map, color);
-    }
+    };
 
     Camera.prototype.drawRaysOnMap = function (rays, map, color) {
         for (let j = 0; j < rays.length; j++) {
             this.drawRayOnMap(rays[j], map, color);
         }
-    }
+    };
 
     Camera.prototype.drawRayOnMap = function (ray, map, color) {
         let x, y, hMapScaleRatio, vMapScaleRatio;
@@ -174,7 +222,7 @@ define(function () {
             this.context.fillRect(x, y, 1, 1); //draw a pixel of the ray with color
         }
         this.context.restore();
-    }
+    };
 
 
     return {

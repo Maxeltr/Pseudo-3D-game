@@ -33,8 +33,12 @@ define(function (require) {
     var gameObjectModule = require('./GameObject');
     var commandModule = require('./Command');
     var playerInputComponentModule = require('./PlayerInputComponent');
+    var graphicsComponentModule = require('./GraphicsComponent');
+    var physicsComponentModule = require('./PhysicsComponent');
     var stateModule = require('./State');
 
+    var spriteModule = require('./Sprite');
+    var animationModule = require('./Animation');
 
 
 
@@ -57,11 +61,12 @@ define(function (require) {
             new commandModule.MoveForwardCommand(),
             new commandModule.MoveBackwardCommand(),
             new commandModule.RotateLeftCommand(),
-            new commandModule.RotateRightCommand()
+            new commandModule.RotateRightCommand(),
+            new commandModule.ShootCommand()
             );
 
 
-    let totalBitmaps = 2;
+    let totalBitmaps = 3;
     let counter = 0;
     let onload = function () {
         counter++;
@@ -72,8 +77,16 @@ define(function (require) {
 
     let background = bitmapModule.createBitmap('./img/sky_daytime_blue.jpg', 2048, 1024, 2048, 1024, onload);
     let walls = bitmapModule.createBitmap('./img/textures.png', 384, 64, 64, 64, onload);
+    let orcSpriteSheet = bitmapModule.createBitmap('./img/orcSpriteSheet.png', 832, 1344, 64, 64, onload, 640, 512, 576, 704, 9);
 
-    let playerCamera = cameraModule.createCamera(512, 256);
+    let orcSprite = spriteModule.createSprite('orc', orcSpriteSheet);
+    orcSprite.addAnimation(animationModule.createAnimation('stop', 10, 8, 9, 11, 1, 1, 1));
+    orcSprite.addAnimation(animationModule.createAnimation('move', 10, 8, 9, 11, 9, 1, 1));
+    orcSprite.addAnimation(animationModule.createAnimation('shoot', 18, 16, 17, 19, 12, 1, 1));
+    orcSprite.addAnimation(animationModule.createAnimation('continueShooting', 18, 16, 17, 19, 12, 1, 5));
+    orcSprite.setCurrentAnimation('stop');
+
+    let playerCamera = cameraModule.createCamera(1024, 512);
     playerCamera.setCanvas(document.getElementById("3DView"));
 
     let mapScreen = cameraModule.createCamera(256, 256);
@@ -81,32 +94,55 @@ define(function (require) {
 
     let map = mapModule.createMap();
 
-    let player = playerModule.createPlayer(3, 5, 0.5);
+    let player = gameObjectModule.createGameObject(physicsComponentModule.createPhysicsComponent(map), graphicsComponentModule.createGraphicsComponent(), playerInputComponent, new stateModule.StateContainer());
+    player.graphicsComponent.sprite = orcSprite;
 
-    let npcArr = [gameObjectModule.createGameObject(1, 3, playerInputComponent, new stateModule.StateContainer()), gameObjectModule.createGameObject(0, 0, playerInputComponent, new stateModule.StateContainer())];
+    let npcArr = [
+        gameObjectModule.createGameObject(physicsComponentModule.createPhysicsComponent(map), graphicsComponentModule.createGraphicsComponent(orcSprite), playerInputComponent, new stateModule.StateContainer()),
+        gameObjectModule.createGameObject(physicsComponentModule.createPhysicsComponent(map), graphicsComponentModule.createGraphicsComponent(orcSprite), playerInputComponent, new stateModule.StateContainer()),
+        gameObjectModule.createGameObject(physicsComponentModule.createPhysicsComponent(map), graphicsComponentModule.createGraphicsComponent(orcSprite), playerInputComponent, new stateModule.StateContainer()),
+        gameObjectModule.createGameObject(physicsComponentModule.createPhysicsComponent(map), graphicsComponentModule.createGraphicsComponent(orcSprite), playerInputComponent, new stateModule.StateContainer())
+
+    ];
+
+    npcArr[0].direction = 0.7;
+
     npcArr[1].x = 4;
     npcArr[1].y = 4;
+    npcArr[1].direction = 3;
+
+    npcArr[2].x = 7;
+    npcArr[2].y = 7.7;
+    npcArr[2].direction = 5;
+
+    npcArr[3].x = 14.7;
+    npcArr[3].y = 10.5;
+    npcArr[3].direction = 4.14;
 
     function startGameLoop() {
         let loop = new GameLoop();
         loop.start(function (seconds) {
 
             playerCamera.clearScreen();
-            playerCamera.drawBackground(background, npcArr[0].direction);
-            playerCamera.drawWalls(npcArr[0].x, npcArr[0].y, npcArr[0].direction, npcArr[0].fov, map, walls);
+            playerCamera.drawBackground(background, player.direction);
+            playerCamera.drawWalls(player.x, player.y, player.direction, player.fov, map, walls);
+
+            playerCamera.drawObjects(npcArr, player.x, player.y, player.direction, player.fov);
+
 
             mapScreen.clearScreen();
             mapScreen.drawMap(map, 'grey');
             mapScreen.drawObjectOnMap(player, map, 'grayish');
-            //mapScreen.drawFovOnMap(player, map, 'grey');
+            mapScreen.drawFovOnMap(player, map, 'grey');
             mapScreen.drawObjectsOnMap(npcArr, map, 'blue');
-            mapScreen.drawFovsOnMap(npcArr, map, 'grey');
+            mapScreen.drawFovsOnMap(npcArr, map, 'blue');
 
             for (j = 0; j < npcArr.length; j++) {
-                npcArr[j].update(player, seconds, map);
+                npcArr[j].update(seconds);
             }
 
-            //console.log(npcArr[0].stateComponent.state);
+            player.update(seconds);
+
         });
     }
 

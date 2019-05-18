@@ -28,19 +28,23 @@ define(function () {
 
         this.setState = function (state) {
             this.state = state;
-        }
+        };
+
+        this.getCurrentState = function () {
+            return this.state;
+        };
 
         this.getStopState = function () {
             return new StopState(this);
-        }
+        };
 
         this.getMoveState = function () {
             return new MoveState(this);
-        }
+        };
 
-        this.getAttackState = function () {
-            return new AttackState(this);
-        }
+        this.getShootState = function () {
+            return new ShootState(this);
+        };
     }
 
     function State(container) {
@@ -54,39 +58,38 @@ define(function () {
 
     State.prototype.update = function () {
 
-    }
+    };
 
-    State.prototype.stop = function () {
+    State.prototype.stop = function (object) {
         this.container.setState(this.container.getStopState());
+
+        object.getGraphics().setCurrentAnimation('stop');
     };
 
-    State.prototype.move = function (object, distance, map) {
+    State.prototype.move = function (object, seconds) {
         this.container.setState(this.container.getMoveState());
-        object.move(distance, map);
-        update graphic?
+
+        object.getGraphics().setCurrentAnimation('move');
     };
 
-    State.prototype.attack = function () {
-        this.container.setState(this.container.getAttackState());
-    }
+    State.prototype.shoot = function (object, seconds) {
+        this.container.setState(this.container.getShootState());
 
+        object.getGraphics().setCurrentAnimation('shoot');
+    };
 
     function StopState(container) {
         State.apply(this, arguments);
         this.container = container;
         this.name = 'STATE_STOP';
 
-        this.getName = function () {
-            return this.name;
-        };
-
         this.stop = function () {
 
-        }
+        };
 
-        this.update = function () {
-
-        }
+        this.update = function (object, seconds) {
+            object.getGraphics().update(object, seconds);
+        };
     }
 
     StopState.prototype = Object.create(State.prototype);
@@ -97,48 +100,57 @@ define(function () {
         this.container = container;
         this.name = 'STATE_MOVE';
 
-        this.getName = function () {
-            return this.name;
+        this.move = function (object, seconds) {
+            object.getPhysics().move(object, seconds);
         };
 
-        this.move = function () {
-
-        }
-
         this.update = function (object, seconds) {
-            object.graphicsComponent._frameIndex += object.graphicsComponent.animationSpeed * object.movementVelocity * seconds;
-            object.graphicsComponent.frameIndex = Math.trunc(object.graphicsComponent._frameIndex);
-            if (object.graphicsComponent.frameIndex > object.graphicsComponent.frames) {
-                object.graphicsComponent.frameIndex = object.graphicsComponent._frameIndex = 0;
-            }
-        }
+            object.getGraphics().update(object, seconds);
+        };
     }
 
     MoveState.prototype = Object.create(State.prototype);
     MoveState.prototype.constructor = MoveState;
 
-    function AttackState(container) {
+    function ShootState(container) {
         State.apply(this, arguments);
         this.container = container;
-        this.name = 'STATE_ATTACK';
+        this.name = 'STATE_SHOOT';
+        this.isChargeTimeElapsed;
 
-        this.getName = function () {
-            return this.name;
+        this.shoot = function (object, seconds) {
+            if (this.isChargeTimeElapsed) {
+
+                //shoot
+                this.isChargeTimeElapsed = false;
+                if (object.getGraphics().getCurrentAnimation().name !== 'continueShooting')
+                    object.getGraphics().setCurrentAnimation('continueShooting');
+
+            }
         };
 
-        this.attack = function () {
+        this.move = function (object, seconds) {
+            let commands = object.getInputs().handleInput();
+            for (let i = 0; i < commands.length; i++) {
+                if (commands[i].name === 'Shoot')
+                    return;
+            }
+            this.stop(object);
+        };
 
-        }
-
-        this.update = function () {
-
-        }
+        this.update = function (object, seconds) {
+            object.getGraphics().update(object, seconds);
+            this.isChargeTimeElapsed = object.getGraphics().isLastFrame();
+        };
     }
 
-    AttackState.prototype = Object.create(State.prototype);
-    AttackState.prototype.constructor = AttackState;
+    ShootState.prototype = Object.create(State.prototype);
+    ShootState.prototype.constructor = ShootState;
 
     return {
+        createStateContainer: function () {
+            return new StateContainer();
+        },
         StateContainer: StateContainer
     };
 });

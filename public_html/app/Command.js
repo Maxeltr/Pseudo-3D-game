@@ -1,4 +1,4 @@
-/* 
+/*
  * The MIT License
  *
  * Copyright 2019 Maxim Eltratov <Maxim.Eltratov@yandex.ru>.
@@ -23,42 +23,56 @@
  */
 
 define(function () {
-	function MoveForwardCommand() {
+    function MoveForwardCommand() {
+        this.name = 'Forward';
+    }
 
-	}
+    MoveForwardCommand.prototype.execute = function (actor, seconds) {
+        if (typeof actor.getState().move === 'function')
+            actor.getState().move(actor, seconds);
+    };
 
-	MoveForwardCommand.prototype.execute = function(actor, seconds, map) {
-	  actor.moveForward(seconds, map);
-	};
-	
-	function MoveBackwardCommand() {
+    function MoveBackwardCommand() {
+        this.name = 'Backward';
+    }
 
-	}
+    MoveBackwardCommand.prototype.execute = function (actor, seconds) {
+        if (typeof actor.getState().move === 'function')
+            actor.getState().move(actor, -seconds);
+    };
 
-	MoveBackwardCommand.prototype.execute = function(actor, seconds, map) {
-	  actor.moveBackward(seconds, map);
-	};
-	
-	function RotateLeftCommand() {
+    function RotateLeftCommand() {
+        this.name = 'Left';
+    }
 
-	}
+    RotateLeftCommand.prototype.execute = function (actor, seconds) {
+        if (typeof actor.getPhysics().rotate === 'function')
+            actor.getPhysics().rotate(actor, -seconds);
+    };
 
-	RotateLeftCommand.prototype.execute = function(actor, seconds) {
-	  actor.rotateLeft(seconds);
-	};
-	
-	function RotateRightCommand() {
+    function RotateRightCommand() {
+        this.name = 'Right';
+    }
 
-	}
-	
-	RotateRightCommand.prototype.execute = function(actor, seconds) {
-	  actor.rotateRight(seconds);
-	};
-	
-	return {
-		MoveForwardCommand: MoveForwardCommand,
-		MoveBackwardCommand: MoveBackwardCommand,
-		RotateLeftCommand: RotateLeftCommand,
-		RotateRightCommand: RotateRightCommand
-	};
+    RotateRightCommand.prototype.execute = function (actor, seconds) {
+        if (typeof actor.getPhysics().rotate === 'function')
+            actor.getPhysics().rotate(actor, seconds);
+    };
+
+    function ShootCommand() {
+        this.name = 'Shoot';
+    }
+
+    ShootCommand.prototype.execute = function (actor, seconds) {
+        if (typeof actor.getState().shoot === 'function')
+            actor.getState().shoot(actor, seconds);
+    };
+
+    return {
+        MoveForwardCommand: MoveForwardCommand,
+        MoveBackwardCommand: MoveBackwardCommand,
+        RotateLeftCommand: RotateLeftCommand,
+        RotateRightCommand: RotateRightCommand,
+        ShootCommand: ShootCommand
+    };
 });

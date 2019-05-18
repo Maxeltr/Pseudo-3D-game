@@ -23,21 +23,61 @@
  */
 
 define(function () {
-    function GraphicsComponent() {
-        this.frameIndex = 0;
-		this._frameIndex = 0.0;
+    function GraphicsComponent(sprite) {
+        this.sprite = sprite;
     }
 
-    GraphicsComponent.prototype.update = function (player, seconds, map) {
-        
+    GraphicsComponent.prototype.setCurrentAnimation = function (animationName) {
+        this.sprite.setCurrentAnimation(animationName);
     };
 
+    GraphicsComponent.prototype.getCurrentAnimation = function () {
+        return this.sprite.getCurrentAnimation();
+    };
 
+    GraphicsComponent.prototype.getFrameWidth = function () {
+        return this.sprite.bitmap.frameWidth;
+    };
+
+    GraphicsComponent.prototype.getFrameHeight = function () {
+        return this.sprite.bitmap.frameHeight;
+    };
+
+    GraphicsComponent.prototype.isLastFrame = function () {
+        return this.sprite.isLastFrame();
+    };
+
+    GraphicsComponent.prototype.getImage = function () {
+        return this.sprite.getImage();
+    };
+
+    GraphicsComponent.prototype.getImageX = function () {
+        return this.sprite.getImageX();
+    };
+
+    GraphicsComponent.prototype.getImageY = function (spriteDirectionAboutPlayer) {
+
+        if (spriteDirectionAboutPlayer < -2.356 || spriteDirectionAboutPlayer > 2.356) {
+            return this.sprite.getImageY('front');
+        } else if ((spriteDirectionAboutPlayer > -0.785 && spriteDirectionAboutPlayer < 0) || (spriteDirectionAboutPlayer >= 0 && spriteDirectionAboutPlayer < 0.785)) {
+            return this.sprite.getImageY('back');
+        } else if (spriteDirectionAboutPlayer >= -2.356 && spriteDirectionAboutPlayer <= -0.785) {
+            return this.sprite.getImageY('right');
+        } else if (spriteDirectionAboutPlayer <= 2.356 && spriteDirectionAboutPlayer >= 0.785) {
+            return this.sprite.getImageY('left');
+        }
+    };
+
+    GraphicsComponent.prototype.update = function (object, seconds) {
+        this.sprite.update(object, seconds);
+
+    };
 
     return {
-		createGraphicsComponent: function() {
-            return new GraphicsComponent();
-        }
+        createGraphicsComponent: function (sprite) {
+            return new GraphicsComponent(sprite);
+        },
+        GraphicsComponent: GraphicsComponent
     };
 });
 
