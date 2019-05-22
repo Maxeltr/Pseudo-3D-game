@@ -24,16 +24,6 @@
 
 define(function () {
     function StateContainer() {
-        this.state = new StopState(this);
-
-        this.setState = function (state) {
-            this.state = state;
-        };
-
-        this.getCurrentState = function () {
-            return this.state;
-        };
-
         this.getStopState = function () {
             return new StopState(this);
         };
@@ -61,26 +51,22 @@ define(function () {
     };
 
     State.prototype.stop = function (object) {
-        this.container.setState(this.container.getStopState());
-
         object.getGraphics().setCurrentAnimation('stop');
+        object.setState(this.container.getStopState());
     };
 
     State.prototype.move = function (object, seconds) {
-        this.container.setState(this.container.getMoveState());
-
         object.getGraphics().setCurrentAnimation('move');
+        object.setState(this.container.getMoveState());
     };
 
     State.prototype.shoot = function (object, seconds) {
-        this.container.setState(this.container.getShootState());
-
         object.getGraphics().setCurrentAnimation('shoot');
+        object.setState(this.container.getShootState());
     };
 
     function StopState(container) {
         State.apply(this, arguments);
-        this.container = container;
         this.name = 'STATE_STOP';
 
         this.stop = function () {
@@ -97,7 +83,6 @@ define(function () {
 
     function MoveState(container) {
         State.apply(this, arguments);
-        this.container = container;
         this.name = 'STATE_MOVE';
 
         this.move = function (object, seconds) {
@@ -114,7 +99,6 @@ define(function () {
 
     function ShootState(container) {
         State.apply(this, arguments);
-        this.container = container;
         this.name = 'STATE_SHOOT';
         this.isChargeTimeElapsed;
 

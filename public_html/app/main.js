@@ -66,7 +66,7 @@ define(function (require) {
             );
 
 
-    let totalBitmaps = 3;
+    let totalBitmaps = 4;
     let counter = 0;
     let onload = function () {
         counter++;
@@ -77,14 +77,30 @@ define(function (require) {
 
     let background = bitmapModule.createBitmap('./img/sky_daytime_blue.jpg', 2048, 1024, 2048, 1024, onload);
     let walls = bitmapModule.createBitmap('./img/textures.png', 384, 64, 64, 64, onload);
-    let orcSpriteSheet = bitmapModule.createBitmap('./img/orcSpriteSheet.png', 832, 1344, 64, 64, onload, 640, 512, 576, 704, 9);
+    let orcSpriteSheet = bitmapModule.createBitmap('./img/orcSpriteSheet.png', 832, 1344, 64, 64, onload);
+    let arrowSpriteSheet = bitmapModule.createBitmap('./img/arrowSpriteSheet.png', 64, 256, 64, 64, onload);
 
-    let orcSprite = spriteModule.createSprite('orc', orcSpriteSheet);
-    orcSprite.addAnimation(animationModule.createAnimation('stop', 10, 8, 9, 11, 1, 1, 1));
-    orcSprite.addAnimation(animationModule.createAnimation('move', 10, 8, 9, 11, 9, 1, 1));
-    orcSprite.addAnimation(animationModule.createAnimation('shoot', 18, 16, 17, 19, 12, 1, 1));
-    orcSprite.addAnimation(animationModule.createAnimation('continueShooting', 18, 16, 17, 19, 12, 1, 5));
-    orcSprite.setCurrentAnimation('stop');
+    function orcSpriteFactory() {
+        let orcSprite = spriteModule.createSprite('orc', orcSpriteSheet);
+        orcSprite.addAnimation(animationModule.createAnimation('stop', 10, 8, 9, 11, 1, 1, 1));
+        orcSprite.addAnimation(animationModule.createAnimation('move', 10, 8, 9, 11, 9, 1, 1));
+        orcSprite.addAnimation(animationModule.createAnimation('shoot', 18, 16, 17, 19, 12, 1, 1));
+        orcSprite.addAnimation(animationModule.createAnimation('continueShooting', 18, 16, 17, 19, 12, 1, 5));
+        orcSprite.setCurrentAnimation('stop');
+
+        return orcSprite;
+    }
+
+    function arrowSpriteFactory() {
+        let arrowSprite = spriteModule.createSprite('arrow', arrowSpriteSheet);
+        arrowSprite.addAnimation(animationModule.createAnimation('move', 3, 1, 2, 4, 1, 1, 1));
+        arrowSprite.setCurrentAnimation('move');
+
+        return arrowSprite;
+    }
+
+    let orcSprite = orcSpriteFactory();
+    let arrowSprite = arrowSpriteFactory();
 
     let playerCamera = cameraModule.createCamera(1024, 512);
     playerCamera.setCanvas(document.getElementById("3DView"));
@@ -94,14 +110,19 @@ define(function (require) {
 
     let map = mapModule.createMap();
 
-    let player = gameObjectModule.createGameObject(physicsComponentModule.createPhysicsComponent(map), graphicsComponentModule.createGraphicsComponent(), playerInputComponent, new stateModule.StateContainer());
-    player.graphicsComponent.sprite = orcSprite;
+    let stateContainer = new stateModule.StateContainer();
+    let stateComponent = stateContainer.getStopState();
+
+    let physicsComponent = physicsComponentModule.createPhysicsComponent(map);
+    let graphicsComponent = graphicsComponentModule.createGraphicsComponent(orcSprite);
+
+    let player = gameObjectModule.createGameObject(physicsComponent, graphicsComponent, playerInputComponent, stateComponent);
 
     let npcArr = [
-        gameObjectModule.createGameObject(physicsComponentModule.createPhysicsComponent(map), graphicsComponentModule.createGraphicsComponent(orcSprite), playerInputComponent, new stateModule.StateContainer()),
-        gameObjectModule.createGameObject(physicsComponentModule.createPhysicsComponent(map), graphicsComponentModule.createGraphicsComponent(orcSprite), playerInputComponent, new stateModule.StateContainer()),
-        gameObjectModule.createGameObject(physicsComponentModule.createPhysicsComponent(map), graphicsComponentModule.createGraphicsComponent(orcSprite), playerInputComponent, new stateModule.StateContainer()),
-        gameObjectModule.createGameObject(physicsComponentModule.createPhysicsComponent(map), graphicsComponentModule.createGraphicsComponent(orcSprite), playerInputComponent, new stateModule.StateContainer())
+        gameObjectModule.createGameObject(physicsComponent, graphicsComponent, playerInputComponent, stateComponent),
+        gameObjectModule.createGameObject(physicsComponent, graphicsComponent, playerInputComponent, stateComponent),
+        gameObjectModule.createGameObject(physicsComponent, graphicsComponent, playerInputComponent, stateComponent),
+        gameObjectModule.createGameObject(physicsComponent, graphicsComponent, playerInputComponent, stateComponent)
 
     ];
 

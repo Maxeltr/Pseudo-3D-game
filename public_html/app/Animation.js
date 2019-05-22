@@ -23,7 +23,16 @@
  */
 
 define(function () {
-    function Animation(animationName, spritesheetRowFrontSide, spritesheetRowBackSide, spritesheetRowLeftSide, spritesheetRowRightSide, frameAmount, animationSpeed, initialFrame) {
+    function Animation(
+            animationName,
+            spritesheetRowFrontSide,
+            spritesheetRowBackSide,
+            spritesheetRowLeftSide,
+            spritesheetRowRightSide,
+            frameAmount,
+            animationSpeed,
+            initialFrame
+            ) {
         this.name = animationName;
         this.initialFrame = initialFrame - 1;
         this.frameIndex = this.initialFrame;

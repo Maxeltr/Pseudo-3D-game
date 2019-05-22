@@ -60,7 +60,11 @@ define(function () {
     };
 
     GameObject.prototype.getState = function () {
-        return this.stateComponent.getCurrentState();
+        return this.stateComponent;
+    };
+
+    GameObject.prototype.setState = function (state) {
+        this.stateComponent = state;
     };
 
     GameObject.prototype.getPhysics = function () {
