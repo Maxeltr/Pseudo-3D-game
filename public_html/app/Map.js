@@ -69,8 +69,8 @@ define(function () {
         }
     };
 
-    Map.prototype.castRay = function (x, y, direction, angle, step, saveTrace) {
-        let textureId, cx, cy, distance, steps;
+    Map.prototype.castRay = function (x, y, angle, step, saveTrace) {
+        let textureId, cx, cy, steps;
         let increment = step || 0.01;
         let trace = [];
 
@@ -84,9 +84,8 @@ define(function () {
             if (textureId !== undefined)
                 break;
         }
-        distance = steps * Math.cos(angle - direction);
 
-        return {x: cx, y: cy, distance: distance, barrier: textureId, trace: trace};
+        return {x: cx, y: cy, distance: steps, barrier: textureId, trace: trace};
     };
 
     return {

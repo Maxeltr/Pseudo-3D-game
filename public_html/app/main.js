@@ -29,44 +29,14 @@ define(function (require) {
     var mapModule = require('./Map');
     var bitmapModule = require('./Bitmap');
     var cameraModule = require('./Camera');
-    var playerModule = require('./Player');
-    var gameObjectModule = require('./GameObject');
-    var commandModule = require('./Command');
-    var playerInputComponentModule = require('./PlayerInputComponent');
-    var graphicsComponentModule = require('./GraphicsComponent');
-    var physicsComponentModule = require('./PhysicsComponent');
-    var stateModule = require('./State');
-
-    var spriteModule = require('./Sprite');
-    var animationModule = require('./Animation');
-
-
-
-
-    /*function Monster () {
-
-     this.sizeRadius = 0.3;
-     };
-
-     Monster.prototype = Object.create(command.MoveCommand.prototype);
-     Monster.prototype.constructor = Monster;
-
-     console.log(new Monster());*/
+    var gameObjectManagerModule = require('./GameObjectManager');
+    var aiManagerModule = require('./AiManager');
 
     // Load library/vendor modules using
     // full IDs, like:
     //var print = require('print');
 
-    let playerInputComponent = playerInputComponentModule.createPlayerInputComponent(
-            new commandModule.MoveForwardCommand(),
-            new commandModule.MoveBackwardCommand(),
-            new commandModule.RotateLeftCommand(),
-            new commandModule.RotateRightCommand(),
-            new commandModule.ShootCommand()
-            );
-
-
-    let totalBitmaps = 4;
+    let totalBitmaps = 1;
     let counter = 0;
     let onload = function () {
         counter++;
@@ -77,30 +47,18 @@ define(function (require) {
 
     let background = bitmapModule.createBitmap('./img/sky_daytime_blue.jpg', 2048, 1024, 2048, 1024, onload);
     let walls = bitmapModule.createBitmap('./img/textures.png', 384, 64, 64, 64, onload);
-    let orcSpriteSheet = bitmapModule.createBitmap('./img/orcSpriteSheet.png', 832, 1344, 64, 64, onload);
-    let arrowSpriteSheet = bitmapModule.createBitmap('./img/arrowSpriteSheet.png', 64, 256, 64, 64, onload);
+    //let arrowSpriteSheet = bitmapModule.createBitmap('./img/arrowSpriteSheet.png', 64, 256, 64, 64, onload);
 
-    function orcSpriteFactory() {
-        let orcSprite = spriteModule.createSprite('orc', orcSpriteSheet);
-        orcSprite.addAnimation(animationModule.createAnimation('stop', 10, 8, 9, 11, 1, 1, 1));
-        orcSprite.addAnimation(animationModule.createAnimation('move', 10, 8, 9, 11, 9, 1, 1));
-        orcSprite.addAnimation(animationModule.createAnimation('shoot', 18, 16, 17, 19, 12, 1, 1));
-        orcSprite.addAnimation(animationModule.createAnimation('continueShooting', 18, 16, 17, 19, 12, 1, 5));
-        orcSprite.setCurrentAnimation('stop');
 
-        return orcSprite;
-    }
+    /*function arrowSpriteFactory() {
+     let arrowSprite = spriteModule.createSprite('arrow', arrowSpriteSheet);
+     arrowSprite.addAnimation(animationModule.createAnimation('move', 3, 1, 2, 4, 1, 1, 1));
+     arrowSprite.setCurrentAnimation('move');
 
-    function arrowSpriteFactory() {
-        let arrowSprite = spriteModule.createSprite('arrow', arrowSpriteSheet);
-        arrowSprite.addAnimation(animationModule.createAnimation('move', 3, 1, 2, 4, 1, 1, 1));
-        arrowSprite.setCurrentAnimation('move');
+     return arrowSprite;
+     }
 
-        return arrowSprite;
-    }
-
-    let orcSprite = orcSpriteFactory();
-    let arrowSprite = arrowSpriteFactory();
+     let arrowSprite = arrowSpriteFactory();*/
 
     let playerCamera = cameraModule.createCamera(1024, 512);
     playerCamera.setCanvas(document.getElementById("3DView"));
@@ -110,39 +68,30 @@ define(function (require) {
 
     let map = mapModule.createMap();
 
-    let stateContainer = new stateModule.StateContainer();
-    let stateComponent = stateContainer.getStopState();
+    let gameObjectManager = gameObjectManagerModule.createGameObjectManager();
 
-    let physicsComponent = physicsComponentModule.createPhysicsComponent(map);
-    let graphicsComponent = graphicsComponentModule.createGraphicsComponent(orcSprite);
 
-    let player = gameObjectModule.createGameObject(physicsComponent, graphicsComponent, playerInputComponent, stateComponent);
+    gameObjectManager.create('orc', 4, 4, 3);
+    gameObjectManager.create('orc', 5, 5, 3);
 
-    let npcArr = [
-        gameObjectModule.createGameObject(physicsComponent, graphicsComponent, playerInputComponent, stateComponent),
-        gameObjectModule.createGameObject(physicsComponent, graphicsComponent, playerInputComponent, stateComponent),
-        gameObjectModule.createGameObject(physicsComponent, graphicsComponent, playerInputComponent, stateComponent),
-        gameObjectModule.createGameObject(physicsComponent, graphicsComponent, playerInputComponent, stateComponent)
+    let player = gameObjectManager.create('player', 2, 2, 0);
+    gameObjectManager.delete(player.id);
 
-    ];
+    let npcArr = [...gameObjectManager.gameObjects.values()];
 
-    npcArr[0].direction = 0.7;
-
-    npcArr[1].x = 4;
-    npcArr[1].y = 4;
-    npcArr[1].direction = 3;
-
-    npcArr[2].x = 7;
-    npcArr[2].y = 7.7;
-    npcArr[2].direction = 5;
-
-    npcArr[3].x = 14.7;
-    npcArr[3].y = 10.5;
-    npcArr[3].direction = 4.14;
+    let aiManager = aiManagerModule.createAiManager();
 
     function startGameLoop() {
         let loop = new GameLoop();
         loop.start(function (seconds) {
+
+            aiManager.update(seconds, player, gameObjectManager, map);
+
+            player.update(seconds);
+
+            gameObjectManager.update(seconds);
+
+            let npcArr = [...gameObjectManager.gameObjects.values()];
 
             playerCamera.clearScreen();
             playerCamera.drawBackground(background, player.direction);
@@ -157,12 +106,6 @@ define(function (require) {
             mapScreen.drawFovOnMap(player, map, 'grey');
             mapScreen.drawObjectsOnMap(npcArr, map, 'blue');
             mapScreen.drawFovsOnMap(npcArr, map, 'blue');
-
-            for (j = 0; j < npcArr.length; j++) {
-                npcArr[j].update(seconds);
-            }
-
-            player.update(seconds);
 
         });
     }
@@ -187,10 +130,4 @@ define(function (require) {
         }
         requestAnimationFrame(this.frame);
     };
-
-
-
-
-
-
 });

@@ -103,7 +103,7 @@ define(function () {
     };
 
     Camera.prototype.drawWalls = function (x, y, direction, fov, map, bitmap) {
-        let angle = 0.0, ray, columnHeight, columnTop, textureX, leftEdge, angleBetweenRays;
+        let angle = 0.0, ray, columnHeight, columnTop, textureX, leftEdge, angleBetweenRays, distance;
 
         leftEdge = direction - fov / 2;
         angleBetweenRays = fov / this.width;
@@ -111,9 +111,10 @@ define(function () {
         this.context.save();
         for (let i = 0; i < this.width; i++) {                                                      //step define amount of rays
             angle = leftEdge + angleBetweenRays * i;
-            ray = map.castRay(x, y, direction, angle, 0.01, true);
-            this.depthBuffer[i] = ray.distance;
-            columnHeight = Math.min(1000, this.height / ray.distance);
+            ray = map.castRay(x, y, angle, 0.01, true);
+            distance = ray.distance * Math.cos(angle - direction);		//to avoid fish eye
+            this.depthBuffer[i] = distance;
+            columnHeight = Math.min(1000, this.height / distance);
             columnTop = this.height / 2 - columnHeight / 2;
             textureX = this._getTextureX(ray, bitmap);
             this.context.drawImage(bitmap.image, textureX, 0, 1, bitmap.height, i, columnTop, 1, columnHeight);
@@ -194,9 +195,9 @@ define(function () {
 
         left = object.direction - object.fov / 2;
         right = object.direction + object.fov / 2;
-        rays.push(map.castRay(object.x, object.y, object.direction, left, step, true));
-        rays.push(map.castRay(object.x, object.y, object.direction, object.direction, step, true));
-        rays.push(map.castRay(object.x, object.y, object.direction, right, step, true));
+        rays.push(map.castRay(object.x, object.y, left, step, true));
+        rays.push(map.castRay(object.x, object.y, object.direction, step, true));
+        rays.push(map.castRay(object.x, object.y, right, step, true));
 
         this.drawRaysOnMap(rays, map, color);
     };

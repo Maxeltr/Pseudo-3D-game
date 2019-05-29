@@ -24,6 +24,8 @@
 
 define(function () {
     function GameObject(physicsComponent, graphicsComponent, inputComponent, stateComponent) {
+        this.id;
+        this.type;
         this.name;
         this.x = 1.4;
         this.y = 1.4;
@@ -37,7 +39,9 @@ define(function () {
         this.graphicsComponent = graphicsComponent;
         this.inputComponent = inputComponent;
         this.stateComponent = stateComponent;
+        //this.activityComponent = activityComponent;
         this.paces = 0;
+        this.sightDistance = 4.0;
     }
 
     GameObject.prototype.update = function (seconds) {

@@ -34,7 +34,7 @@ define(function () {
             initialFrame
             ) {
         this.name = animationName;
-        this.initialFrame = initialFrame - 1;
+        this.initialFrame = initialFrame;
         this.frameIndex = this.initialFrame;
         this._frameIndex = this.initialFrame;
         this.front = spritesheetRowFrontSide;

@@ -35,6 +35,10 @@ define(function () {
         this.getShootState = function () {
             return new ShootState(this);
         };
+
+        this.getDestroyState = function () {
+            return new DestroyState(this);
+        };
     }
 
     function State(container) {
@@ -50,7 +54,7 @@ define(function () {
 
     };
 
-    State.prototype.stop = function (object) {
+    State.prototype.stop = function (object, seconds) {
         object.getGraphics().setCurrentAnimation('stop');
         object.setState(this.container.getStopState());
     };
@@ -65,11 +69,18 @@ define(function () {
         object.setState(this.container.getShootState());
     };
 
+    State.prototype.destroy = function (object, seconds) {
+        object.getGraphics().setCurrentAnimation('destroy');
+        object.setState(this.container.getDestroyState());
+    };
+
     function StopState(container) {
         State.apply(this, arguments);
         this.name = 'STATE_STOP';
+        this.reactionTime;
+        this.idleTime;
 
-        this.stop = function () {
+        this.stop = function (object, seconds) {
 
         };
 
@@ -130,6 +141,35 @@ define(function () {
 
     ShootState.prototype = Object.create(State.prototype);
     ShootState.prototype.constructor = ShootState;
+
+    function DestroyState(container) {
+        State.apply(this, arguments);
+        this.name = 'STATE_DESTROY';
+
+        this.destroy = function (object, seconds) {
+
+        };
+
+        this.stop = function (object, seconds) {
+
+        };
+
+        this.move = function (object, seconds) {
+
+        };
+
+        this.shoot = function (object, seconds) {
+
+        };
+
+        this.update = function (object, seconds) {
+            if (!object.getGraphics().isLastFrame())
+                object.getGraphics().update(object, seconds);
+        };
+    }
+
+    DestroyState.prototype = Object.create(State.prototype);
+    DestroyState.prototype.constructor = DestroyState;
 
     return {
         createStateContainer: function () {
