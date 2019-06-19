@@ -34,8 +34,8 @@ define(function (require) {
             let orcSprite = spriteModule.createSprite('orc', orcSpriteSheet);
             orcSprite.addAnimation(animationModule.createAnimation('stop', 10, 8, 9, 11, 1, 1, 0));
             orcSprite.addAnimation(animationModule.createAnimation('move', 10, 8, 9, 11, 9, 10, 0));
-            orcSprite.addAnimation(animationModule.createAnimation('shoot', 18, 16, 17, 19, 12, 1, 0));
-            orcSprite.addAnimation(animationModule.createAnimation('continueShooting', 18, 16, 17, 19, 12, 1, 4));
+            orcSprite.addAnimation(animationModule.createAnimation('getWeapons', 18, 16, 17, 19, 4, 3, 0));
+            orcSprite.addAnimation(animationModule.createAnimation('shoot', 18, 16, 17, 19, 11, 4, 4));
             orcSprite.addAnimation(animationModule.createAnimation('destroy', 20, 20, 20, 20, 6, 0.5, 0));
             orcSprite.setCurrentAnimation('stop');
 

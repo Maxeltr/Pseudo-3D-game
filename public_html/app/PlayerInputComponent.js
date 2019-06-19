@@ -25,7 +25,7 @@
 define(function () {
     function PlayerInputComponent(up, down, left, right, space) {
         this.codes = {37: 'left', 39: 'right', 38: 'forward', 40: 'backward', 32: 'space'};
-        this.states = {'left': false, 'right': false, 'forward': false, 'backward': false, 'space': false};
+        this.states = {'left': false, 'right': false, 'forward': false, 'backward': false, 'space': false};		//button states
         this.buttonUp = up;
         this.buttonDown = down;
         this.buttonLeft = left;

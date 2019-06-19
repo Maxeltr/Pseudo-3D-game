@@ -24,16 +24,18 @@
 
 define(function (require) {
     function GameObjectManager() {
+        this.id = 'GameObjectManager';	//todo guid
         this.gameObjects = new Map();
         this.factories = new Map();
 
         let orcGameObjectFactoryModule = require('./OrcGameObjectFactory');
-
         this.addFactory('orc', orcGameObjectFactoryModule.createOrcGameObjectFactory());
 
         let playerGameObjectFactoryModule = require('./PlayerGameObjectFactory');
-
         this.addFactory('player', playerGameObjectFactoryModule.createPlayerGameObjectFactory());
+
+        let arrowGameObjectFactoryModule = require('./ArrowGameObjectFactory');
+        this.addFactory('arrow', arrowGameObjectFactoryModule.createArrowGameObjectFactory());
     }
 
     GameObjectManager.prototype.addFactory = function (factoryName, factory) {
@@ -41,13 +43,19 @@ define(function (require) {
     };
 
     GameObjectManager.prototype.create = function (factoryName, x, y, direction) {
-        let gameObject;
+        let gameObject, factory;
 
-        gameObject = this.factories.get(factoryName)(factoryName);
+        factory = this.factories.get(factoryName);
+		if (! factory)
+			return;
+			
+        gameObject = factory(factoryName);
         gameObject.id = uuidv4();
         gameObject.x = x;
         gameObject.y = y;
         gameObject.direction = direction;
+        gameObject.getSubject().registerObserver(this);
+        
         this.gameObjects.set(gameObject.id, gameObject);
 
         return gameObject;
@@ -63,16 +71,51 @@ define(function (require) {
         return this.gameObjects.delete(key);
     };
 
+    GameObjectManager.prototype.getArrayObjects = function () {
+        return [...this.gameObjects.values()];
+    };
+    
     GameObjectManager.prototype.sort = function () {
 
     };
-
+    
+    GameObjectManager.prototype.onNotify = function (object, event) {
+        this.createBullets(object, event);
+    };
+	
+	GameObjectManager.prototype.createBullets = function (object, event) {
+		let weapons = object.getWeapons();
+		this.create(weapons.name, event.params.x, event.params.y, event.params.direction);
+	};
+	
     GameObjectManager.prototype.update = function (seconds) {
-        for (let value of this.gameObjects.values()) {
-            value.update(seconds);
+        for (let gameObject of this.gameObjects.values()) {
+            gameObject.update(seconds);
+			
+			
+			
+			//this.checkCollision(gameObject, this.gameObjects.values());
+			
+			if (gameObject.destroy === true) {
+				this.gameObjects.delete(gameObject.id);
+			}
         }
     };
 
+    GameObjectManager.prototype.checkCollision = function (gameObject, targets) {	//todo refactor move to another module?
+		for (let target of targets) {
+			if (target.id === gameObject.id)
+				continue;
+			distance = Math.sqrt(Math.pow(target.x - gameObject.x, 2) + Math.pow(target.y - gameObject.y, 2));
+			if (distance < (target.sizeRadius * 0.5 + gameObject.sizeRadius * 0.5)) {
+				if (gameObject.name === 'arrow') {
+					gameObject.getState().destroy(gameObject);
+					target.getState().destroy(target);
+				}
+			}
+		}
+	}
+    
     return {
         createGameObjectManager: function () {
             return new GameObjectManager();

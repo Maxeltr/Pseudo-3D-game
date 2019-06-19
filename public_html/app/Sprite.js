@@ -35,7 +35,7 @@ define(function () {
     };
 
     Sprite.prototype.getCurrentFrameNumber = function () {
-        return this.currentAnimation.frameIndex + 1;
+        return this.currentAnimation.frameIndex;
     };
 
     Sprite.prototype.getCurrentAmountFrames = function () {

@@ -41,24 +41,33 @@ define(function () {
 
         if (distance < 0)
             moveDirection += Math.PI;
+        
+        while (moveDirection < 0) {
+            moveDirection += (2 * Math.PI);
+        }
+        
+        while (moveDirection >= (2 * Math.PI)) {
+            moveDirection -= (2 * Math.PI);
+        }
 
-        if (this.map.checkCollisionsWithWalls(object.x + dx, object.y, moveDirection, object.sizeRadius)) {
+        //if (this.map.checkCollisionsWithWalls(object.x + dx, object.y, moveDirection, object.sizeRadius)) {
             object.x += dx;
-        } else {
-            xCollision = true;
-        }
+        //} else {
+        //    xCollision = true;
+        //}
 
-        if (this.map.checkCollisionsWithWalls(object.x, object.y + dy, moveDirection, object.sizeRadius)) {
+        //if (this.map.checkCollisionsWithWalls(object.x, object.y + dy, moveDirection, object.sizeRadius)) {
             object.y += dy;
-        } else {
-            yCollision = true;
-        }
-
+        //} else {
+        //    yCollision = true;
+        //}
 
         if (!xCollision || !yCollision) {
             object.paces += Math.abs(distance);
         }
 
+        object.motionDirection = moveDirection;
+    
         return {'xCollision': xCollision, 'yCollision': yCollision};
     };
 

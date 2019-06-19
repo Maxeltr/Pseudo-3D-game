@@ -23,23 +23,26 @@
  */
 
 define(function () {
-    function GameObject(physicsComponent, graphicsComponent, inputComponent, stateComponent) {
+    function GameObject(physicsComponent, graphicsComponent, inputComponent, stateComponent, weaponComponent, subjectComponent, collisionComponent) {
         this.id;
         this.type;
         this.name;
         this.x = 1.4;
         this.y = 1.4;
         this.direction = 0.0;
+        this.motionDirection = 0.0;
         this.fov = Math.PI / 3.0;               //field of view
         this.sizeRadius = 0.3;
-        this.removed = false;
+        this.destroy = false;
         this.movementVelocity = 3;
         this.rotationVelocity = Math.PI;
         this.physicsComponent = physicsComponent;
         this.graphicsComponent = graphicsComponent;
         this.inputComponent = inputComponent;
         this.stateComponent = stateComponent;
-        //this.activityComponent = activityComponent;
+        this.weaponComponent = weaponComponent;
+		this.subjectComponent = subjectComponent;
+        this.collisionComponent = collisionComponent;
         this.paces = 0;
         this.sightDistance = 4.0;
     }
@@ -58,7 +61,7 @@ define(function () {
             commands[i].execute(this, seconds);
         }
 
-        if (commands.length === 0)
+        if (commands.length === 0 && typeof this.getState().stop === 'function')
             this.getState().stop(this);
 
     };
@@ -83,9 +86,21 @@ define(function () {
         return this.inputComponent;
     };
 
+    GameObject.prototype.getWeapons = function () {
+        return this.weaponComponent;
+    };
+	
+	GameObject.prototype.getSubject = function () {
+        return this.subjectComponent;
+    };
+    
+    GameObject.prototype.getCollisions = function () {
+        return this.collisionComponent;
+    };
+    
     return {
-        createGameObject: function (physicsComponent, graphicsComponent, inputComponent, stateComponent) {
-            return new GameObject(physicsComponent, graphicsComponent, inputComponent, stateComponent);
+        createGameObject: function (physicsComponent, graphicsComponent, inputComponent, stateComponent, weaponComponent, subjectComponent, collisionComponent) {
+            return new GameObject(physicsComponent, graphicsComponent, inputComponent, stateComponent, weaponComponent, subjectComponent, collisionComponent);
         },
         GameObject: GameObject
     };

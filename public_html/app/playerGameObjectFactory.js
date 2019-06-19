@@ -33,16 +33,17 @@ define(function (require) {
         let stateModule = require('./State');
         let orcSpriteFactoryModule = require('./OrcSpriteFactory');
         let gameObjectModule = require('./GameObject');
+        let nullWeaponModule = require('./NullWeaponComponent');
+		let nullSubjectModule = require('./NullSubjectComponent');
+        let collisionModule = require('./CollisionComponent');
 
         let orcSpriteFactory = orcSpriteFactoryModule.createOrcSpriteFactory();
         let map = mapModule.createMap();
-        let physics = physicsComponentModule.createPhysicsComponent(map);
-        let graphics = graphicsComponentModule.createGraphicsComponent(orcSpriteFactory());
-
+        
         return function () {
             let gameObject = gameObjectModule.createGameObject(
-                    physics,
-                    graphics,
+                    physicsComponentModule.createPhysicsComponent(map),
+                    graphicsComponentModule.createGraphicsComponent(orcSpriteFactory()),
                     playerInputComponentModule.createPlayerInputComponent(
                             new commandModule.MoveForwardCommand(),
                             new commandModule.MoveBackwardCommand(),
@@ -50,7 +51,10 @@ define(function (require) {
                             new commandModule.RotateRightCommand(),
                             new commandModule.ShootCommand()
                             ),
-                    stateModule.createStateContainer().getStopState()
+                    stateModule.createStateContainer().getStopState(),
+                    nullWeaponModule.createNullWeaponComponent(),
+					nullSubjectModule.createNullSubjectComponent(),
+					collisionModule.createCollisionComponent()
                     );
 
             gameObject.name = 'player';

@@ -23,36 +23,42 @@
  */
 
 define(function () {
-    function AiInputComponent(up, down, left, right, space) {
-        this.states = {'left': false, 'right': false, 'forward': false, 'backward': false, 'space': false};
-        this.buttonUp = up;
-        this.buttonDown = down;
-        this.buttonLeft = left;
-        this.buttonRight = right;
-        this.buttonSpace = space;
+    function ArrowWeaponComponent() {
+        this.name = 'arrow';
+		this.shotDistance = 3.0;
+		this.isCharge;
+		this._wasShot;
     }
 
-    AiInputComponent.prototype.handleInput = function () {
-        let buttons = [];
-
-        if (this.states.left)
-            buttons.push(this.buttonLeft);
-        if (this.states.right)
-            buttons.push(this.buttonRight);
-        if (this.states.forward)
-            buttons.push(this.buttonUp);
-        if (this.states.backward)
-            buttons.push(this.buttonDown);
-        if (this.states.space)
-            buttons.push(this.buttonSpace);
-
-        return buttons;
+    ArrowWeaponComponent.prototype.shoot = function (object, seconds) {
+        if (this.isCharge) {
+			object.getSubject().notifyObservers(object, {event: 'shot', params: {x: object.x + object.sizeRadius * Math.cos(object.direction), y: object.y + object.sizeRadius * Math.sin(object.direction), direction: object.direction}});
+			this._wasShot = true;          
+		}
+	};
+	
+	ArrowWeaponComponent.prototype.update = function (object, seconds) {
+        if (object.getGraphics().getCurrentAnimation().name === 'shoot') {
+			if (object.getGraphics().isLastFrame()) {
+				if (! this._wasShot) {
+					this.isCharge = true;
+				} else {
+					this.isCharge = false;
+				}
+			} else {
+				if (this._wasShot)
+					this._wasShot = false;
+			}
+		} else if (this.isCharge || this._wasShot) {
+			this.isCharge = false;
+			this._wasShot = false;
+		}
     };
 
     return {
-        createAiInputComponent: function (up, down, left, right, space) {
-            return new AiInputComponent(up, down, left, right, space);
+        createArrowWeaponComponent: function () {
+            return new ArrowWeaponComponent();
         },
-        AiInputComponent: AiInputComponent
+        ArrowWeaponComponent: ArrowWeaponComponent
     };
 });

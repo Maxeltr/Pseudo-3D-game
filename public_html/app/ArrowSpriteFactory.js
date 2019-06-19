@@ -22,37 +22,27 @@
  * THE SOFTWARE.
  */
 
-define(function () {
-    function AiInputComponent(up, down, left, right, space) {
-        this.states = {'left': false, 'right': false, 'forward': false, 'backward': false, 'space': false};
-        this.buttonUp = up;
-        this.buttonDown = down;
-        this.buttonLeft = left;
-        this.buttonRight = right;
-        this.buttonSpace = space;
+define(function (require) {
+    function ArrowSpriteFactory() {
+
+        let bitmapModule = require('./Bitmap');
+        let spriteModule = require('./Sprite');
+        let animationModule = require('./Animation');
+        let arrowSpriteSheet = bitmapModule.createBitmap('./img/arrowSpriteSheet.png', 64, 256, 64, 64);
+
+        return function () {
+            let arrowSprite = spriteModule.createSprite('arrow', arrowSpriteSheet);
+            arrowSprite.addAnimation(animationModule.createAnimation('move', 2, 0, 1, 3, 1, 1, 0));
+            arrowSprite.setCurrentAnimation('move');
+
+            return arrowSprite;
+        };
     }
 
-    AiInputComponent.prototype.handleInput = function () {
-        let buttons = [];
-
-        if (this.states.left)
-            buttons.push(this.buttonLeft);
-        if (this.states.right)
-            buttons.push(this.buttonRight);
-        if (this.states.forward)
-            buttons.push(this.buttonUp);
-        if (this.states.backward)
-            buttons.push(this.buttonDown);
-        if (this.states.space)
-            buttons.push(this.buttonSpace);
-
-        return buttons;
-    };
-
     return {
-        createAiInputComponent: function (up, down, left, right, space) {
-            return new AiInputComponent(up, down, left, right, space);
+        createArrowSpriteFactory: function () {
+            return new ArrowSpriteFactory();
         },
-        AiInputComponent: AiInputComponent
+        ArrowSpriteFactory: ArrowSpriteFactory
     };
 });

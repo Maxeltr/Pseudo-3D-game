@@ -22,34 +22,80 @@
  * THE SOFTWARE.
  */
 
-define(function () {
-    function AiManager() {
-
+define(function (require) {
+    function AiManager(player, gameObjectManager, map) {
+        this.player = player;
+		this.gameObjectManager = gameObjectManager;
+		this.map = map;
+        var vectorAlgebraModule = require('vectorAlgebra');
+        this.vectors = vectorAlgebraModule.VectorAlgebra;
     }
 
-    AiManager.prototype.update = function (seconds, target, gameObjectManager, map) {
-        let states = {};
-        for (let gameObject of gameObjectManager.gameObjects.values()) {
+    AiManager.prototype.update = function (seconds) {
+        let target = this.player;
 
-            if (this.checkSight(target, gameObject, map)) {
-                states = {'forward': true};
-                console.log(gameObject.x * target.x + gameObject.y * target.y);
+        for (let gameObject of this.gameObjectManager.getArrayObjects()) {
+            let states = {};
+            if (this.checkSight(target, gameObject, this.map)) {
+                let distanceToTarget = Math.sqrt(Math.pow(target.x - gameObject.x, 2) + Math.pow(target.y - gameObject.y, 2));
+                if (distanceToTarget > gameObject.getWeapons().shotDistance) {
+                    states.forward = true;
+                } else {
+                    if (this.isAhead(gameObject, target))
+                        states.space = true;
+                }
+
+                if (this.isOnLeft(gameObject, target)) {
+                    states.left = true;
+                } else if (this.isOnRight(gameObject, target)) {
+                    states.right = true;
+                }
 
             }
 
-            gameObject.getInputs().setInput(states);
-            states = {};
+            this.setStates(gameObject.getInputs(), states);
         }
+    };
+
+    AiManager.prototype.setStates = function (inputs, states) {
+        for (let state in inputs.states) {
+            if (inputs.states.hasOwnProperty(state))
+                inputs.states[state] = false;
+        }
+
+        for (let state in states) {
+            if (states.hasOwnProperty(state))
+                inputs.states[state] = states[state];
+        }
+    };
+
+    AiManager.prototype.isOnLeft = function (referenceGameObject, target) {
+        let referenceNormalizedVector = [Math.cos(referenceGameObject.direction), Math.sin(referenceGameObject.direction)];
+        let angle = this.vectors.angleBetween(referenceNormalizedVector, [target.x - referenceGameObject.x, target.y - referenceGameObject.y]);
+
+        return angle < -0.1;
+    };
+
+    AiManager.prototype.isOnRight = function (referenceGameObject, target) {
+        let referenceNormalizedVector = [Math.cos(referenceGameObject.direction), Math.sin(referenceGameObject.direction)];
+        let angle = this.vectors.angleBetween(referenceNormalizedVector, [target.x - referenceGameObject.x, target.y - referenceGameObject.y]);
+
+        return angle > 0.1;
+    };
+
+    AiManager.prototype.isAhead = function (referenceGameObject, target) {
+        let referenceNormalizedVector = [Math.cos(referenceGameObject.direction), Math.sin(referenceGameObject.direction)];
+        let angle = this.vectors.angleBetween(referenceNormalizedVector, [target.x - referenceGameObject.x, target.y - referenceGameObject.y]);
+
+        return angle > -0.1 && angle < 0.1;
     };
 
     AiManager.prototype.checkSight = function (target, npc, map) {
         let distanceBetweenNpcAndPlayer, toPlayerDirection, angleBetweenVectors;
         let nNpcX, nNpcY, nTargetX, nTargetY, ray;
 
-        ray = map.castRay(npc.x, npc.y, npc.direction, 0.3, false);	//ray from npc in itself direction
-
-        nNpcX = (ray.x - npc.x) / ray.distance;			//normalize vector sight direction
-        nNpcY = (ray.y - npc.y) / ray.distance;			//normalize vector sight direction
+        nNpcX = Math.cos(npc.direction);		//normalized vector sight
+        nNpcY = Math.sin(npc.direction);		//normalized vector sight
 
         distanceBetweenNpcAndPlayer = Math.sqrt(Math.pow(target.x - npc.x, 2) + Math.pow(target.y - npc.y, 2));	//distance from npc to player
 
@@ -70,22 +116,9 @@ define(function () {
         return false;
     };
 
-    AiManager.prototype._castRay = function (gameObject, map) {
-        let states = gameObject.getInputs().states;
-        let ray = map.castRay(gameObject.x, gameObject.y, gameObject.direction, 0.1, false);
-        if (ray.distance > 0.5) {
-            states['forward'] = true;
-            states['left'] = false;
-        } else {
-            states['forward'] = false;
-            states['left'] = true;
-        }
-
-    };
-
     return {
-        createAiManager: function () {
-            return new AiManager();
+        createAiManager: function (player, gameObjectManager, map) {
+            return new AiManager(player, gameObjectManager, map);
         },
         GameObjectManager: AiManager
     };

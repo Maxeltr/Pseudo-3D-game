@@ -23,36 +23,26 @@
  */
 
 define(function () {
-    function AiInputComponent(up, down, left, right, space) {
-        this.states = {'left': false, 'right': false, 'forward': false, 'backward': false, 'space': false};
-        this.buttonUp = up;
-        this.buttonDown = down;
-        this.buttonLeft = left;
-        this.buttonRight = right;
-        this.buttonSpace = space;
+    function NullSubjectComponent() {
+        this.observers = {};
     }
 
-    AiInputComponent.prototype.handleInput = function () {
-        let buttons = [];
-
-        if (this.states.left)
-            buttons.push(this.buttonLeft);
-        if (this.states.right)
-            buttons.push(this.buttonRight);
-        if (this.states.forward)
-            buttons.push(this.buttonUp);
-        if (this.states.backward)
-            buttons.push(this.buttonDown);
-        if (this.states.space)
-            buttons.push(this.buttonSpace);
-
-        return buttons;
+    NullSubjectComponent.prototype.registerObserver = function (observer) {
+		
+	};
+	
+	NullSubjectComponent.prototype.removeObserver = function (observer) {
+        
     };
 
+	NullSubjectComponent.prototype.notifyObservers = function (subject, event) {
+        
+    };
+	
     return {
-        createAiInputComponent: function (up, down, left, right, space) {
-            return new AiInputComponent(up, down, left, right, space);
+        createNullSubjectComponent: function () {
+            return new NullSubjectComponent();
         },
-        AiInputComponent: AiInputComponent
+        NullSubjectComponent: NullSubjectComponent
     };
 });

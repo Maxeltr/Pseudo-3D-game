@@ -31,6 +31,7 @@ define(function (require) {
     var cameraModule = require('./Camera');
     var gameObjectManagerModule = require('./GameObjectManager');
     var aiManagerModule = require('./AiManager');
+    var collisionDetectorModule = require('./CollisionDetector');
 
     // Load library/vendor modules using
     // full IDs, like:
@@ -70,29 +71,38 @@ define(function (require) {
 
     let gameObjectManager = gameObjectManagerModule.createGameObjectManager();
 
-
-    gameObjectManager.create('orc', 4, 4, 3);
-    gameObjectManager.create('orc', 5, 5, 3);
+    /*gameObjectManager.create('orc', 4, 4, 3);
+    gameObjectManager.create('orc', 7, 2, 0.8);
+	gameObjectManager.create('orc', 4, 2, 0.8);
+	gameObjectManager.create('orc', 7, 6, 0.8);
+	gameObjectManager.create('orc', 9, 2, 0.8);
+	gameObjectManager.create('orc', 7, 8, 0.8);
+	gameObjectManager.create('orc', 3, 2, 0.8);*/
 
     let player = gameObjectManager.create('player', 2, 2, 0);
-    gameObjectManager.delete(player.id);
+    
+    //gameObjectManager.delete(player.id);
 
-    let npcArr = [...gameObjectManager.gameObjects.values()];
 
-    let aiManager = aiManagerModule.createAiManager();
+
+    let aiManager = aiManagerModule.createAiManager(player, gameObjectManager, map);
+
+    let collisionDetector = collisionDetectorModule.createCollisionDetector(gameObjectManager, map);
 
     function startGameLoop() {
         let loop = new GameLoop();
         loop.start(function (seconds) {
 
-            aiManager.update(seconds, player, gameObjectManager, map);
+            //aiManager.update(seconds);
 
             player.update(seconds);
 
             gameObjectManager.update(seconds);
+            
+            collisionDetector.update(seconds);
 
-            let npcArr = [...gameObjectManager.gameObjects.values()];
-
+            let npcArr = gameObjectManager.getArrayObjects();
+            
             playerCamera.clearScreen();
             playerCamera.drawBackground(background, player.direction);
             playerCamera.drawWalls(player.x, player.y, player.direction, player.fov, map, walls);

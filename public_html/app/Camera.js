@@ -146,7 +146,7 @@ define(function () {
 
         distanceBetweenObjectAndCamera = Math.sqrt(Math.pow(x - object.x, 2) + Math.pow(y - object.y, 2));
 
-        objectProjectionSize = Math.min(500, Math.floor(this.height / distanceBetweenObjectAndCamera));
+        objectProjectionSize = Math.min(2000, Math.floor(this.height / distanceBetweenObjectAndCamera));
         hOffsetOnProjection = Math.floor((directionToObject - direction) * this.width / fov + this.width / 2 - objectProjectionSize / 2);
         vOffsetOnProjection = this.height / 2 - Math.floor(objectProjectionSize / 2);
         hObjectScaleRatio = graphicsComponent.getFrameWidth() / objectProjectionSize;

@@ -46,7 +46,7 @@ define(function () {
     }
 
     Animation.prototype.update = function (object, seconds) {
-        this._frameIndex += this.animationSpeed * object.movementVelocity * seconds;
+        this._frameIndex += this.animationSpeed * seconds;
         this.frameIndex = Math.trunc(this._frameIndex);
         if (this.frameIndex > this.frames) {
             this.frameIndex = this._frameIndex = this.initialFrame;

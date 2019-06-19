@@ -24,7 +24,7 @@
 
 define(function () {
     function NullInputComponent() {
-
+        this.states = {};
     }
 
     NullInputComponent.prototype.handleInput = function () {

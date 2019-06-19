@@ -24,16 +24,8 @@
 
 define(function () {
     function StateContainer() {
-        this.getStopState = function () {
-            return new StopState(this);
-        };
-
         this.getMoveState = function () {
             return new MoveState(this);
-        };
-
-        this.getShootState = function () {
-            return new ShootState(this);
         };
 
         this.getDestroyState = function () {
@@ -54,19 +46,9 @@ define(function () {
 
     };
 
-    State.prototype.stop = function (object, seconds) {
-        object.getGraphics().setCurrentAnimation('stop');
-        object.setState(this.container.getStopState());
-    };
-
     State.prototype.move = function (object, seconds) {
         object.getGraphics().setCurrentAnimation('move');
         object.setState(this.container.getMoveState());
-    };
-
-    State.prototype.shoot = function (object, seconds) {
-        object.getGraphics().setCurrentAnimation('getWeapons');
-        object.setState(this.container.getShootState());
     };
 
     State.prototype.destroy = function (object, seconds) {
@@ -74,30 +56,16 @@ define(function () {
         object.setState(this.container.getDestroyState());
     };
 
-    function StopState(container) {
-        State.apply(this, arguments);
-        this.name = 'STATE_STOP';
-        this.reactionTime;
-        this.idleTime;
-
-        this.stop = function (object, seconds) {
-
-        };
-
-        this.update = function (object, seconds) {
-            object.getGraphics().update(object, seconds);
-        };
-    }
-
-    StopState.prototype = Object.create(State.prototype);
-    StopState.prototype.constructor = StopState;
-
     function MoveState(container) {
         State.apply(this, arguments);
         this.name = 'STATE_MOVE';
 
         this.move = function (object, seconds) {
-            object.getPhysics().move(object, seconds);
+            let collision = object.getPhysics().move(object, seconds);
+            if (collision.xCollision === true || collision.yCollision === true) {
+                this.destroy(object, seconds);
+				
+			}
         };
 
         this.update = function (object, seconds) {
@@ -108,64 +76,23 @@ define(function () {
     MoveState.prototype = Object.create(State.prototype);
     MoveState.prototype.constructor = MoveState;
 
-    function ShootState(container) {
-        State.apply(this, arguments);
-        this.name = 'STATE_SHOOT';
-
-        this.shoot = function (object, seconds) {
-            object.getWeapons().shoot(object, seconds);
-        };
-
-        this.move = function (object, seconds) {
-            let commands = object.getInputs().handleInput();
-            for (let i = 0; i < commands.length; i++) {
-                if (commands[i].name === 'Shoot')
-                    return;
-            }
-            this.stop(object);
-        };
-
-        this.update = function (object, seconds) {
-            let graphics = object.getGraphics();
-			if (graphics.getCurrentAnimation().name === 'getWeapons' && graphics.isLastFrame())
-                graphics.setCurrentAnimation('shoot');
-            graphics.update(object, seconds);
-			
-			object.getWeapons().update(object, seconds);
-        };
-    }
-
-    ShootState.prototype = Object.create(State.prototype);
-    ShootState.prototype.constructor = ShootState;
-
     function DestroyState(container) {
         State.apply(this, arguments);
         this.name = 'STATE_DESTROY';
-        this._destroyTime = 0.0;
 
         this.destroy = function (object, seconds) {
-
-        };
-
-        this.stop = function (object, seconds) {
-
+            
         };
 
         this.move = function (object, seconds) {
-
-        };
-
-        this.shoot = function (object, seconds) {
 
         };
 
         this.update = function (object, seconds) {
             if (!object.getGraphics().isLastFrame()) {
                 object.getGraphics().update(object, seconds);
-            } else {
-				this._destroyTime += seconds;
-				if (this._destroyTime > 1)
-					object.destroy = true;
+			} else {
+				object.destroy = true;
 			}
         };
     }
