@@ -25,38 +25,38 @@
 define(function () {
     function ArrowWeaponComponent() {
         this.name = 'arrow';
-		this.shotDistance = 3.0;
-		this.isCharge;
-		this._wasShot;
+        this.shotDistance = 3.0;
+        this.isCharge;
+        this._wasShot;
     }
 
     ArrowWeaponComponent.prototype.shoot = function (object, seconds) {
         if (this.isCharge) {
-			object.getSubject().notifyObservers(object, {event: 'shot', params: {x: object.x + object.sizeRadius * Math.cos(object.direction), y: object.y + object.sizeRadius * Math.sin(object.direction), direction: object.direction}});
-			this._wasShot = true;          
-		}
-	};
-	
-	ArrowWeaponComponent.prototype.update = function (object, seconds) {
+            object.getSubject().notifyObservers(object, {event: 'shot', params: {x: object.x + object.sizeRadius * Math.cos(object.direction), y: object.y + object.sizeRadius * Math.sin(object.direction), direction: object.direction}});
+            this._wasShot = true;
+        }
+    };
+
+    ArrowWeaponComponent.prototype.update = function (object, seconds) {
         if (object.getGraphics().getCurrentAnimation().name === 'shoot') {
-			if (object.getGraphics().isLastFrame()) {
-				if (! this._wasShot) {
-					this.isCharge = true;
-				} else {
-					this.isCharge = false;
-				}
-			} else {
-				if (this._wasShot)
-					this._wasShot = false;
-			}
-		} else if (this.isCharge || this._wasShot) {
-			this.isCharge = false;
-			this._wasShot = false;
-		}
+            if (object.getGraphics().isLastFrame()) {
+                if (!this._wasShot) {
+                    this.isCharge = true;
+                } else {
+                    this.isCharge = false;
+                }
+            } else {
+                if (this._wasShot)
+                    this._wasShot = false;
+            }
+        } else if (this.isCharge || this._wasShot) {
+            this.isCharge = false;
+            this._wasShot = false;
+        }
     };
 
     return {
-        createArrowWeaponComponent: function () {
+        create: function () {
             return new ArrowWeaponComponent();
         },
         ArrowWeaponComponent: ArrowWeaponComponent

@@ -23,42 +23,37 @@
  */
 
 define(function () {
-    function PhysicsComponent() {
-
+    function GameLoop() {
+        this.lastTime = 0;
+        this.callback = function () {};
+        this.frame = this.frame.bind(this);
+        this.requestId;
     }
 
-    PhysicsComponent.prototype.rotate = function (object, seconds) {
-        let angle = object.rotationVelocity * seconds;
-        object.direction = (object.direction + angle + Math.PI * 2) % (Math.PI * 2);
+    GameLoop.prototype.start = function (callback) {
+        this.callback = callback;
+        this.requestId = requestAnimationFrame(this.frame);
+    };
+    
+    GameLoop.prototype.stop = function () {
+        cancelAnimationFrame(this.requestId);
+    };
+    
+    GameLoop.prototype.frame = function (time) {
+        let seconds = (time - this.lastTime) / 1000;
+        this.lastTime = time;
+        if (seconds < 0.2) {
+            this.callback(seconds);
+        }
+        this.requestId = requestAnimationFrame(this.frame);
     };
 
-    PhysicsComponent.prototype.move = function (object, seconds) {
-        let distance = seconds * object.movementVelocity;
-        let dx = Math.cos(object.direction) * distance;
-        let dy = Math.sin(object.direction) * distance;
-        let moveDirection = object.direction;
-        let xCollision = false, yCollision = false;
 
-        if (distance < 0)
-            moveDirection += Math.PI;
-
-        while (moveDirection < 0) {
-            moveDirection += (2 * Math.PI);
-        }
-
-        while (moveDirection >= (2 * Math.PI)) {
-            moveDirection -= (2 * Math.PI);
-        }
-
-        object.x += dx;
-        object.y += dy;
-        object.motionDirection = moveDirection;
-    };
 
     return {
-        create: function () {
-            return new PhysicsComponent();
-        },
-        PhysicsComponent: PhysicsComponent
+		create: function() {
+            return new GameLoop();
+        }
     };
 });
+

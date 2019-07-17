@@ -127,11 +127,11 @@ define(function () {
 
         this.update = function (object, seconds) {
             let graphics = object.getGraphics();
-			if (graphics.getCurrentAnimation().name === 'getWeapons' && graphics.isLastFrame())
+            if (graphics.getCurrentAnimation().name === 'getWeapons' && graphics.isLastFrame())
                 graphics.setCurrentAnimation('shoot');
             graphics.update(object, seconds);
-			
-			object.getWeapons().update(object, seconds);
+
+            object.getWeapons().update(object, seconds);
         };
     }
 
@@ -163,10 +163,10 @@ define(function () {
             if (!object.getGraphics().isLastFrame()) {
                 object.getGraphics().update(object, seconds);
             } else {
-				this._destroyTime += seconds;
-				if (this._destroyTime > 1)
-					object.destroy = true;
-			}
+                this._destroyTime += seconds;
+                if (this._destroyTime > 1)
+                    object.destroy = true;
+            }
         };
     }
 

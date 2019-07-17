@@ -26,25 +26,23 @@ define(function (require) {
     function PlayerGameObjectFactory() {
 
         var commandModule = require('./Command');
-        let mapModule = require('./Map');
         let playerInputComponentModule = require('./PlayerInputComponent');
         let graphicsComponentModule = require('./GraphicsComponent');
         let physicsComponentModule = require('./PhysicsComponent');
         let stateModule = require('./State');
         let orcSpriteFactoryModule = require('./OrcSpriteFactory');
         let gameObjectModule = require('./GameObject');
-        let nullWeaponModule = require('./NullWeaponComponent');
-		let nullSubjectModule = require('./NullSubjectComponent');
+        let weaponModule = require('./ArrowWeaponComponent');
+        let subjectModule = require('./SubjectComponent');
         let collisionModule = require('./CollisionComponent');
 
-        let orcSpriteFactory = orcSpriteFactoryModule.createOrcSpriteFactory();
-        let map = mapModule.createMap();
-        
+        let orcSpriteFactory = orcSpriteFactoryModule.create();
+
         return function () {
-            let gameObject = gameObjectModule.createGameObject(
-                    physicsComponentModule.createPhysicsComponent(map),
-                    graphicsComponentModule.createGraphicsComponent(orcSpriteFactory()),
-                    playerInputComponentModule.createPlayerInputComponent(
+            let gameObject = gameObjectModule.create(
+                    physicsComponentModule.create(),
+                    graphicsComponentModule.create(orcSpriteFactory()),
+                    playerInputComponentModule.create(
                             new commandModule.MoveForwardCommand(),
                             new commandModule.MoveBackwardCommand(),
                             new commandModule.RotateLeftCommand(),
@@ -52,9 +50,9 @@ define(function (require) {
                             new commandModule.ShootCommand()
                             ),
                     stateModule.createStateContainer().getStopState(),
-                    nullWeaponModule.createNullWeaponComponent(),
-					nullSubjectModule.createNullSubjectComponent(),
-					collisionModule.createCollisionComponent()
+                    weaponModule.create(),
+                    subjectModule.create(),
+                    collisionModule.create()
                     );
 
             gameObject.name = 'player';
@@ -64,7 +62,7 @@ define(function (require) {
     }
 
     return {
-        createPlayerGameObjectFactory: function () {
+        create: function () {
             return new PlayerGameObjectFactory();
         },
         PlayerGameObjectFactory: PlayerGameObjectFactory

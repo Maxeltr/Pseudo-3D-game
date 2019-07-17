@@ -25,16 +25,20 @@
 define(function () {
     function NullWeaponComponent() {
         this.name = '';
-		this.shots = [];
-		this.shotDistance;
+        this.shots = [];
+        this.shotDistance;
     }
 
     NullWeaponComponent.prototype.shoot = function (object) {
-        
+
+    };
+
+    NullWeaponComponent.prototype.update = function (object, seconds) {
+
     };
 
     return {
-        createNullWeaponComponent: function () {
+        create: function () {
             return new NullWeaponComponent();
         },
         NullWeaponComponent: NullWeaponComponent

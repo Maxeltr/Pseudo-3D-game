@@ -25,7 +25,6 @@
 define(function (require) {
     function OrcGameObjectFactory() {
 
-        let mapModule = require('./Map');
         //let nullInputComponentModule = require('./NullInputComponent');
         let aiInputComponentModule = require('./AiInputComponent');
         var commandModule = require('./Command');
@@ -34,39 +33,38 @@ define(function (require) {
         let stateModule = require('./State');
         let orcSpriteFactoryModule = require('./OrcSpriteFactory');
         let gameObjectModule = require('./GameObject');
-        let arrowWeaponModule = require('./ArrowWeaponComponent');
-		let subjectModule = require('./SubjectComponent');
+        let weaponModule = require('./ArrowWeaponComponent');
+        let subjectModule = require('./SubjectComponent');
         let collisionModule = require('./CollisionComponent');
 
-        let orcSpriteFactory = orcSpriteFactoryModule.createOrcSpriteFactory();
-        let map = mapModule.createMap();
-        
+        let orcSpriteFactory = orcSpriteFactoryModule.create();
+
         return function () {
-            let gameObject = gameObjectModule.createGameObject(
-                    physicsComponentModule.createPhysicsComponent(map),
-                    graphicsComponentModule.createGraphicsComponent(orcSpriteFactory()),
-                    aiInputComponentModule.createAiInputComponent(
+            let gameObject = gameObjectModule.create(
+                    physicsComponentModule.create(),
+                    graphicsComponentModule.create(orcSpriteFactory()),
+                    aiInputComponentModule.create(
                             new commandModule.MoveForwardCommand(),
                             new commandModule.MoveBackwardCommand(),
                             new commandModule.RotateLeftCommand(),
                             new commandModule.RotateRightCommand(),
-                            new commandModule.ShootCommand(),
-                            map
+                            new commandModule.ShootCommand()
                             ),
                     stateModule.createStateContainer().getStopState(),
-                    arrowWeaponModule.createArrowWeaponComponent(),
-					subjectModule.createSubjectComponent(),
-					collisionModule.createCollisionComponent()
+                    weaponModule.create(),
+                    subjectModule.create(),
+                    collisionModule.create()
                     );
 
             gameObject.name = 'orc';
+            gameObject.sizeRadius = 0.2;
 
             return gameObject;
         };
     }
 
     return {
-        createOrcGameObjectFactory: function () {
+        create: function () {
             return new OrcGameObjectFactory();
         },
         OrcGameObjectFactory: OrcGameObjectFactory

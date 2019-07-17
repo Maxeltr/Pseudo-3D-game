@@ -23,42 +23,36 @@
  */
 
 define(function () {
-    function PhysicsComponent() {
-
+    function DestructionCollisionComponent() {
+        this.activateTime = 0.01;
     }
 
-    PhysicsComponent.prototype.rotate = function (object, seconds) {
-        let angle = object.rotationVelocity * seconds;
-        object.direction = (object.direction + angle + Math.PI * 2) % (Math.PI * 2);
+    DestructionCollisionComponent.prototype._isActivate = function () {
+        return this.activateTime < 0;
     };
 
-    PhysicsComponent.prototype.move = function (object, seconds) {
-        let distance = seconds * object.movementVelocity;
-        let dx = Math.cos(object.direction) * distance;
-        let dy = Math.sin(object.direction) * distance;
-        let moveDirection = object.direction;
-        let xCollision = false, yCollision = false;
-
-        if (distance < 0)
-            moveDirection += Math.PI;
-
-        while (moveDirection < 0) {
-            moveDirection += (2 * Math.PI);
+    DestructionCollisionComponent.prototype.resolveCollision = function (thisObject, hitObject, direction, distance, seconds) {
+        if (this._isActivate()) {
+            hitObject.health = hitObject.health - thisObject.damage;
+            thisObject.getState().destroy(thisObject, seconds);
         }
+    };
 
-        while (moveDirection >= (2 * Math.PI)) {
-            moveDirection -= (2 * Math.PI);
+    DestructionCollisionComponent.prototype.resolveCollisionWithWalls = function (object, map, seconds, map) {
+        if (this._isActivate()) {
+            object.getState().destroy(object, seconds);
         }
+    };
 
-        object.x += dx;
-        object.y += dy;
-        object.motionDirection = moveDirection;
+    DestructionCollisionComponent.prototype.update = function (object, seconds) {
+        if (this.activateTime > 0)
+            this.activateTime -= seconds;
     };
 
     return {
         create: function () {
-            return new PhysicsComponent();
+            return new DestructionCollisionComponent();
         },
-        PhysicsComponent: PhysicsComponent
+        DestructionCollisionComponent: DestructionCollisionComponent
     };
 });

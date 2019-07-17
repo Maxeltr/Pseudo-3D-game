@@ -49,8 +49,21 @@ define(function () {
         return buttons;
     };
 
+    AiInputComponent.prototype.setStates = function (states) {
+		for (let state in this.states) {
+            if (this.states.hasOwnProperty(state))
+                this.states[state] = false;
+        }
+
+        for (let state in states) {
+            if (states.hasOwnProperty(state))
+                this.states[state] = states[state];
+        }
+	};
+
+
     return {
-        createAiInputComponent: function (up, down, left, right, space) {
+        create: function (up, down, left, right, space) {
             return new AiInputComponent(up, down, left, right, space);
         },
         AiInputComponent: AiInputComponent

@@ -32,7 +32,7 @@ define(function () {
         this.direction = 0.0;
         this.motionDirection = 0.0;
         this.fov = Math.PI / 3.0;               //field of view
-        this.sizeRadius = 0.3;
+        this.sizeRadius = 0.2;
         this.destroy = false;
         this.movementVelocity = 3;
         this.rotationVelocity = Math.PI;
@@ -45,6 +45,8 @@ define(function () {
         this.collisionComponent = collisionComponent;
         this.paces = 0;
         this.sightDistance = 4.0;
+        this.health = 100.0;
+        this.damage = 0.0;
     }
 
     GameObject.prototype.update = function (seconds) {
@@ -99,7 +101,7 @@ define(function () {
     };
     
     return {
-        createGameObject: function (physicsComponent, graphicsComponent, inputComponent, stateComponent, weaponComponent, subjectComponent, collisionComponent) {
+        create: function (physicsComponent, graphicsComponent, inputComponent, stateComponent, weaponComponent, subjectComponent, collisionComponent) {
             return new GameObject(physicsComponent, graphicsComponent, inputComponent, stateComponent, weaponComponent, subjectComponent, collisionComponent);
         },
         GameObject: GameObject

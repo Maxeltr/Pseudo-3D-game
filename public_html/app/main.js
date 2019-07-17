@@ -26,118 +26,18 @@ define(function (require) {
     // Load any app-specific modules
     // with a relative require call,
     // like:
-    var mapModule = require('./Map');
-    var bitmapModule = require('./Bitmap');
-    var cameraModule = require('./Camera');
-    var gameObjectManagerModule = require('./GameObjectManager');
-    var aiManagerModule = require('./AiManager');
-    var collisionDetectorModule = require('./CollisionDetector');
+    var gameStateModule = require('./GameState');
 
     // Load library/vendor modules using
     // full IDs, like:
     //var print = require('print');
 
-    let totalBitmaps = 1;
-    let counter = 0;
-    let onload = function () {
-        counter++;
-        if (counter >= totalBitmaps) {
-            startGameLoop();
-        }
-    };
+    var gameState = gameStateModule.createStateContainer().getStartState();
 
-    let background = bitmapModule.createBitmap('./img/sky_daytime_blue.jpg', 2048, 1024, 2048, 1024, onload);
-    let walls = bitmapModule.createBitmap('./img/textures.png', 384, 64, 64, 64, onload);
-    //let arrowSpriteSheet = bitmapModule.createBitmap('./img/arrowSpriteSheet.png', 64, 256, 64, 64, onload);
+    gameState = gameState.play();
+    //gameState = gameState.pause();
+    //gameState = gameState.loose();
+    //gameState = gameState.win();
 
 
-    /*function arrowSpriteFactory() {
-     let arrowSprite = spriteModule.createSprite('arrow', arrowSpriteSheet);
-     arrowSprite.addAnimation(animationModule.createAnimation('move', 3, 1, 2, 4, 1, 1, 1));
-     arrowSprite.setCurrentAnimation('move');
-
-     return arrowSprite;
-     }
-
-     let arrowSprite = arrowSpriteFactory();*/
-
-    let playerCamera = cameraModule.createCamera(1024, 512);
-    playerCamera.setCanvas(document.getElementById("3DView"));
-
-    let mapScreen = cameraModule.createCamera(256, 256);
-    mapScreen.setCanvas(document.getElementById("map"));
-
-    let map = mapModule.createMap();
-
-    let gameObjectManager = gameObjectManagerModule.createGameObjectManager();
-
-    /*gameObjectManager.create('orc', 4, 4, 3);
-    gameObjectManager.create('orc', 7, 2, 0.8);
-	gameObjectManager.create('orc', 4, 2, 0.8);
-	gameObjectManager.create('orc', 7, 6, 0.8);
-	gameObjectManager.create('orc', 9, 2, 0.8);
-	gameObjectManager.create('orc', 7, 8, 0.8);
-	gameObjectManager.create('orc', 3, 2, 0.8);*/
-
-    let player = gameObjectManager.create('player', 2, 2, 0);
-    
-    //gameObjectManager.delete(player.id);
-
-
-
-    let aiManager = aiManagerModule.createAiManager(player, gameObjectManager, map);
-
-    let collisionDetector = collisionDetectorModule.createCollisionDetector(gameObjectManager, map);
-
-    function startGameLoop() {
-        let loop = new GameLoop();
-        loop.start(function (seconds) {
-
-            //aiManager.update(seconds);
-
-            player.update(seconds);
-
-            gameObjectManager.update(seconds);
-            
-            collisionDetector.update(seconds);
-
-            let npcArr = gameObjectManager.getArrayObjects();
-            
-            playerCamera.clearScreen();
-            playerCamera.drawBackground(background, player.direction);
-            playerCamera.drawWalls(player.x, player.y, player.direction, player.fov, map, walls);
-
-            playerCamera.drawObjects(npcArr, player.x, player.y, player.direction, player.fov);
-
-
-            mapScreen.clearScreen();
-            mapScreen.drawMap(map, 'grey');
-            mapScreen.drawObjectOnMap(player, map, 'grayish');
-            mapScreen.drawFovOnMap(player, map, 'grey');
-            mapScreen.drawObjectsOnMap(npcArr, map, 'blue');
-            mapScreen.drawFovsOnMap(npcArr, map, 'blue');
-
-        });
-    }
-
-    function GameLoop() {
-        this.lastTime = 0;
-        this.callback = function () {};
-        this.frame = this.frame.bind(this);
-
-    }
-
-    GameLoop.prototype.start = function (callback) {
-        this.callback = callback;
-        requestAnimationFrame(this.frame);
-    };
-
-    GameLoop.prototype.frame = function (time) {
-        let seconds = (time - this.lastTime) / 1000;
-        this.lastTime = time;
-        if (seconds < 0.2) {
-            this.callback(seconds);
-        }
-        requestAnimationFrame(this.frame);
-    };
 });

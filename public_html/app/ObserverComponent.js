@@ -24,15 +24,15 @@
 
 define(function () {
     function ObserverComponent() {
-        
+
     }
 
     ObserverComponent.prototype.onNotify = function (object, event) {
-		
-	};
-			
+
+    };
+
     return {
-        createObserverComponent: function () {
+        create: function () {
             return new ObserverComponent();
         },
         ObserverComponent: ObserverComponent

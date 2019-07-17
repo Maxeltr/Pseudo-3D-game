@@ -25,7 +25,6 @@
 define(function (require) {
     function ArrowGameObjectFactory() {
 
-        let mapModule = require('./Map');
         let forcedMoveInputComponentModule = require('./ForcedMoveInputComponent');
         let graphicsComponentModule = require('./GraphicsComponent');
         let physicsComponentModule = require('./PhysicsComponent');
@@ -35,32 +34,31 @@ define(function (require) {
         var commandModule = require('./Command');
         let nullWeaponModule = require('./NullWeaponComponent');
 		let nullSubjectModule = require('./NullSubjectComponent');
-        let collisionModule = require('./CollisionComponent');
+        let collisionModule = require('./DestructionCollisionComponent');
         
-        let arrowSpriteFactory = arrowSpriteFactoryModule.createArrowSpriteFactory();
-        let map = mapModule.createMap();
+        let arrowSpriteFactory = arrowSpriteFactoryModule.create();
         
         return function () {
-            let gameObject = gameObjectModule.createGameObject(
-                    physicsComponentModule.createPhysicsComponent(map),
-                    graphicsComponentModule.createGraphicsComponent(arrowSpriteFactory()),
-                    forcedMoveInputComponentModule.createForcedMoveInputComponent(new commandModule.MoveForwardCommand()),
+            let gameObject = gameObjectModule.create(
+                    physicsComponentModule.create(),
+                    graphicsComponentModule.create(arrowSpriteFactory()),
+                    forcedMoveInputComponentModule.create(new commandModule.MoveForwardCommand()),
                     stateModule.createStateContainer().getMoveState(),
-                    nullWeaponModule.createNullWeaponComponent(),
-					nullSubjectModule.createNullSubjectComponent(),
-					collisionModule.createCollisionComponent()
+                    nullWeaponModule.create(),
+					nullSubjectModule.create(),
+					collisionModule.create()
                     );
 
             gameObject.name = 'arrow';
-            gameObject.sizeRadius = 0.15;
-			gameObject.fov = 0;
+            gameObject.sizeRadius = 0.015;
+			gameObject.damage = 0.0;
 
             return gameObject;
         };
     }
 
     return {
-        createArrowGameObjectFactory: function () {
+        create: function () {
             return new ArrowGameObjectFactory();
         },
         ArrowGameObjectFactory: ArrowGameObjectFactory

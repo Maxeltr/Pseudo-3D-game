@@ -25,47 +25,45 @@
 define(function () {
     function CollisionDetector(gameObjectManager, map) {
         this.gameObjectManager = gameObjectManager;
-		this.map = map;
+        this.map = map;
     }
 
     CollisionDetector.prototype.update = function (seconds) {
-		this.checkCollision(this.gameObjectManager.getArrayObjects(), seconds);
-		
-	};
-	
-	CollisionDetector.prototype.checkCollision = function (gameObjects, seconds) {
-		for (let i = 0; i < gameObjects.length; i++) {
-			for (let j = i + 1; j < gameObjects.length; j++) {
-				let distance = Math.sqrt(Math.pow(gameObjects[i].x - gameObjects[j].x, 2) + Math.pow(gameObjects[i].y - gameObjects[j].y, 2));
-				if (distance < (gameObjects[i].sizeRadius + gameObjects[j].sizeRadius)) {
-					if (gameObjects[i].name === 'arrow') {
-						//gameObjects[j].getState().destroy(gameObjects[j]);
-						//gameObjects[i].getState().destroy(gameObjects[i]);
-					} else {
-						
-					}
-					gameObjects[i].getCollisions().resolveCollision(gameObjects[i], gameObjects[j], distance, seconds);
-					gameObjects[j].getCollisions().resolveCollision(gameObjects[j], gameObjects[i], distance, seconds);
-				}
-			}
-			
-			if (this.checkCollisionsWithWalls(gameObjects[i]))
-				gameObjects[i].getCollisions().resolveCollisionWithWalls(gameObjects[i], this.map, seconds);
-		}
-		
-		
-		
-	}
-	
-	CollisionDetector.prototype.checkCollisionsWithWalls = function (object) {
-		return ! this.map.isEmptyCell(
-					object.x + object.sizeRadius * Math.cos(object.motionDirection),
-					object.y + object.sizeRadius * Math.sin(object.motionDirection)
-				);
+        this.checkCollision(this.gameObjectManager.getArrayObjects(), seconds);
+
     };
-	
+
+    CollisionDetector.prototype.checkCollision = function (gameObjects, seconds) {
+        for (let i = 0; i < gameObjects.length; i++) {
+            for (let j = i + 1; j < gameObjects.length; j++) {
+                let distance = Math.sqrt(Math.pow(gameObjects[i].x - gameObjects[j].x, 2) + Math.pow(gameObjects[i].y - gameObjects[j].y, 2));
+                let radiuses = (gameObjects[i].sizeRadius + gameObjects[j].sizeRadius) * 0.9;
+                if (distance < radiuses) {
+                    let resolveDistance = (gameObjects[i].sizeRadius + gameObjects[j].sizeRadius - distance) / radiuses;
+                    if (gameObjects[i].sizeRadius > gameObjects[j].sizeRadius) {
+						gameObjects[i].getCollisions().resolveCollision(gameObjects[i], gameObjects[j], resolveDistance * gameObjects[j].sizeRadius, seconds, this.map);
+						gameObjects[j].getCollisions().resolveCollision(gameObjects[j], gameObjects[i], resolveDistance * gameObjects[i].sizeRadius, seconds, this.map);
+					} else {
+                        gameObjects[i].getCollisions().resolveCollision(gameObjects[i], gameObjects[j], resolveDistance * gameObjects[i].sizeRadius, seconds, this.map);
+						gameObjects[j].getCollisions().resolveCollision(gameObjects[j], gameObjects[i], resolveDistance * gameObjects[j].sizeRadius, seconds, this.map);
+					}
+                }
+            }
+
+            if (this.checkCollisionsWithWalls(gameObjects[i]))
+                gameObjects[i].getCollisions().resolveCollisionWithWalls(gameObjects[i], this.map, seconds);
+        }
+    };
+
+    CollisionDetector.prototype.checkCollisionsWithWalls = function (object) {
+        return !this.map.isEmptyCell(
+                object.x + object.sizeRadius * Math.cos(object.motionDirection),
+                object.y + object.sizeRadius * Math.sin(object.motionDirection)
+                );
+    };
+
     return {
-        createCollisionDetector: function (gameObjectManager, map) {
+        create: function (gameObjectManager, map) {
             return new CollisionDetector(gameObjectManager, map);
         },
         CollisionDetector: CollisionDetector

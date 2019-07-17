@@ -22,9 +22,11 @@
  * THE SOFTWARE.
  */
 
-define(function () {
+define(function (require) {
     function GraphicsComponent(sprite) {
         this.sprite = sprite;
+        var vectorAlgebraModule = require('vectorAlgebra');
+        this.vectors = vectorAlgebraModule.VectorAlgebra;
     }
 
     GraphicsComponent.prototype.setCurrentAnimation = function (animationName) {
@@ -55,16 +57,27 @@ define(function () {
         return this.sprite.getImageX();
     };
 
-    GraphicsComponent.prototype.getImageY = function (spriteDirectionAboutPlayer) {
+    GraphicsComponent.prototype.getImageY = function (object, cameraX, cameraY) {
+        if (object) {
+            let referenceNormalizedVector = [Math.cos(object.direction), Math.sin(object.direction)];
+            let angle = this.vectors.angleBetween(referenceNormalizedVector, [cameraX - object.x, cameraY - object.y]);
 
-        if (spriteDirectionAboutPlayer < -2.356 || spriteDirectionAboutPlayer > 2.356) {
-            return this.sprite.getImageY('front');
-        } else if ((spriteDirectionAboutPlayer > -0.785 && spriteDirectionAboutPlayer < 0) || (spriteDirectionAboutPlayer >= 0 && spriteDirectionAboutPlayer < 0.785)) {
-            return this.sprite.getImageY('back');
-        } else if (spriteDirectionAboutPlayer >= -2.356 && spriteDirectionAboutPlayer <= -0.785) {
-            return this.sprite.getImageY('right');
-        } else if (spriteDirectionAboutPlayer <= 2.356 && spriteDirectionAboutPlayer >= 0.785) {
-            return this.sprite.getImageY('left');
+            //onLeft
+            if (angle <= -(object.fov / 2) && angle >= -(Math.PI - object.fov / 2))
+                return this.sprite.getImageY('left');
+
+            //onRight
+            if (angle >= (object.fov / 2) && angle <= (Math.PI - object.fov / 2))
+                return this.sprite.getImageY('right');
+
+            //ahead
+            if (angle > -(object.fov / 2) && angle < 0 || angle < (object.fov / 2) && angle > 0 || angle === 0)
+                return this.sprite.getImageY('front');
+
+            //back
+            if (angle < -(Math.PI - object.fov / 2) && angle > -Math.PI || angle > (Math.PI - object.fov / 2) && angle < Math.PI || angle === Math.PI || angle === -Math.PI)
+                return this.sprite.getImageY('back');
+
         }
     };
 
@@ -74,7 +87,7 @@ define(function () {
     };
 
     return {
-        createGraphicsComponent: function (sprite) {
+        create: function (sprite) {
             return new GraphicsComponent(sprite);
         },
         GraphicsComponent: GraphicsComponent

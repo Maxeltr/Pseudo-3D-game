@@ -81,7 +81,7 @@ define(function () {
     };
 
     return {
-        createSprite: function (name, bitmap) {
+        create: function (name, bitmap) {
             return new Sprite(name, bitmap);
         },
         Sprite: Sprite

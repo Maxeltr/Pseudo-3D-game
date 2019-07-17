@@ -33,8 +33,12 @@ define(function () {
         return buttons;
     };
 
+    NullInputComponent.prototype.setStates = function (states) {
+
+    };
+
     return {
-        createNullInputComponent: function () {
+        create: function () {
             return new NullInputComponent();
         },
         NullInputComponent: NullInputComponent

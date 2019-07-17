@@ -61,15 +61,12 @@ define(function () {
         this.name = 'STATE_MOVE';
 
         this.move = function (object, seconds) {
-            let collision = object.getPhysics().move(object, seconds);
-            if (collision.xCollision === true || collision.yCollision === true) {
-                this.destroy(object, seconds);
-				
-			}
+            object.getPhysics().move(object, seconds);
         };
 
         this.update = function (object, seconds) {
             object.getGraphics().update(object, seconds);
+            object.getCollisions().update(object, seconds);
         };
     }
 
@@ -94,6 +91,7 @@ define(function () {
 			} else {
 				object.destroy = true;
 			}
+            object.getCollisions().update(object, seconds);
         };
     }
 

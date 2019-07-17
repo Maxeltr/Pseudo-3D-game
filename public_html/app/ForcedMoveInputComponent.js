@@ -34,8 +34,12 @@ define(function () {
         return buttons;
     };
 
+    ForcedMoveInputComponent.prototype.setStates = function (states) {
+
+	};
+
     return {
-        createForcedMoveInputComponent: function (command) {
+        create: function (command) {
             return new ForcedMoveInputComponent(command);
         },
         ForcedMoveInputComponent: ForcedMoveInputComponent

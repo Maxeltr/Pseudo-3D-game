@@ -50,7 +50,7 @@ define(function () {
     };
 
     return {
-        createBitmap: function (src, width, height, frameWidth, frameHeight, onload) {
+        create: function (src, width, height, frameWidth, frameHeight, onload) {
             return new Bitmap(src, width, height, frameWidth, frameHeight, onload);
         }
     };

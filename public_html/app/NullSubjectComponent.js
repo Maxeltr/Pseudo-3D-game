@@ -28,19 +28,19 @@ define(function () {
     }
 
     NullSubjectComponent.prototype.registerObserver = function (observer) {
-		
-	};
-	
-	NullSubjectComponent.prototype.removeObserver = function (observer) {
-        
+
     };
 
-	NullSubjectComponent.prototype.notifyObservers = function (subject, event) {
-        
+    NullSubjectComponent.prototype.removeObserver = function (observer) {
+
     };
-	
+
+    NullSubjectComponent.prototype.notifyObservers = function (subject, event) {
+
+    };
+
     return {
-        createNullSubjectComponent: function () {
+        create: function () {
             return new NullSubjectComponent();
         },
         NullSubjectComponent: NullSubjectComponent

@@ -28,15 +28,15 @@ define(function (require) {
         let bitmapModule = require('./Bitmap');
         let spriteModule = require('./Sprite');
         let animationModule = require('./Animation');
-        let orcSpriteSheet = bitmapModule.createBitmap('./img/orcSpriteSheet.png', 832, 1344, 64, 64);
+        let orcSpriteSheet = bitmapModule.create('./img/orcSpriteSheet.png', 832, 1344, 64, 64);
 
         return function () {
-            let orcSprite = spriteModule.createSprite('orc', orcSpriteSheet);
-            orcSprite.addAnimation(animationModule.createAnimation('stop', 10, 8, 9, 11, 1, 1, 0));
-            orcSprite.addAnimation(animationModule.createAnimation('move', 10, 8, 9, 11, 9, 10, 0));
-            orcSprite.addAnimation(animationModule.createAnimation('getWeapons', 18, 16, 17, 19, 4, 3, 0));
-            orcSprite.addAnimation(animationModule.createAnimation('shoot', 18, 16, 17, 19, 11, 4, 4));
-            orcSprite.addAnimation(animationModule.createAnimation('destroy', 20, 20, 20, 20, 6, 0.5, 0));
+            let orcSprite = spriteModule.create('orc', orcSpriteSheet);
+            orcSprite.addAnimation(animationModule.create('stop', 10, 8, 9, 11, 1, 1, 0));
+            orcSprite.addAnimation(animationModule.create('move', 10, 8, 9, 11, 9, 10, 0));
+            orcSprite.addAnimation(animationModule.create('getWeapons', 18, 16, 17, 19, 4, 3, 0));
+            orcSprite.addAnimation(animationModule.create('shoot', 18, 16, 17, 19, 11, 4, 4));
+            orcSprite.addAnimation(animationModule.create('destroy', 20, 20, 20, 20, 6, 0.5, 0));
             orcSprite.setCurrentAnimation('stop');
 
             return orcSprite;
@@ -44,7 +44,7 @@ define(function (require) {
     }
 
     return {
-        createOrcSpriteFactory: function () {
+        create: function () {
             return new OrcSpriteFactory();
         },
         OrcSpriteFactory: OrcSpriteFactory

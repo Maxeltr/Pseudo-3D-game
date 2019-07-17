@@ -27,15 +27,16 @@ define(function (require) {
         this.id = 'GameObjectManager';	//todo guid
         this.gameObjects = new Map();
         this.factories = new Map();
+        this.playerId;
 
         let orcGameObjectFactoryModule = require('./OrcGameObjectFactory');
-        this.addFactory('orc', orcGameObjectFactoryModule.createOrcGameObjectFactory());
+        this.addFactory('orc', orcGameObjectFactoryModule.create());
 
         let playerGameObjectFactoryModule = require('./PlayerGameObjectFactory');
-        this.addFactory('player', playerGameObjectFactoryModule.createPlayerGameObjectFactory());
+        this.addFactory('player', playerGameObjectFactoryModule.create());
 
         let arrowGameObjectFactoryModule = require('./ArrowGameObjectFactory');
-        this.addFactory('arrow', arrowGameObjectFactoryModule.createArrowGameObjectFactory());
+        this.addFactory('arrow', arrowGameObjectFactoryModule.create());
     }
 
     GameObjectManager.prototype.addFactory = function (factoryName, factory) {
@@ -46,17 +47,20 @@ define(function (require) {
         let gameObject, factory;
 
         factory = this.factories.get(factoryName);
-		if (! factory)
-			return;
-			
+        if (!factory)
+            return;
+
         gameObject = factory(factoryName);
         gameObject.id = uuidv4();
         gameObject.x = x;
         gameObject.y = y;
         gameObject.direction = direction;
         gameObject.getSubject().registerObserver(this);
-        
+
         this.gameObjects.set(gameObject.id, gameObject);
+
+        if (factoryName = 'player')
+            this.playerId = gameObject.id;
 
         return gameObject;
 
@@ -74,50 +78,43 @@ define(function (require) {
     GameObjectManager.prototype.getArrayObjects = function () {
         return [...this.gameObjects.values()];
     };
-    
+
     GameObjectManager.prototype.sort = function () {
 
     };
-    
+
+    GameObjectManager.prototype.get = function (key) {
+        return this.gameObjects.get(key);
+    };
+
+    GameObjectManager.prototype.getPlayer = function () {
+        return this.gameObjects.get(this.playerId);
+    };
+
     GameObjectManager.prototype.onNotify = function (object, event) {
         this.createBullets(object, event);
     };
-	
-	GameObjectManager.prototype.createBullets = function (object, event) {
-		let weapons = object.getWeapons();
-		this.create(weapons.name, event.params.x, event.params.y, event.params.direction);
-	};
-	
+
+    GameObjectManager.prototype.createBullets = function (object, event) {
+        let weapons = object.getWeapons();
+        this.create(weapons.name, event.params.x, event.params.y, event.params.direction);
+    };
+
     GameObjectManager.prototype.update = function (seconds) {
         for (let gameObject of this.gameObjects.values()) {
             gameObject.update(seconds);
-			
-			
-			
-			//this.checkCollision(gameObject, this.gameObjects.values());
-			
-			if (gameObject.destroy === true) {
-				this.gameObjects.delete(gameObject.id);
-			}
+            if (gameObject.health <= 0) {
+                gameObject.getState().destroy(gameObject, seconds);
+            }
+
+            if (gameObject.destroy === true) {
+                this.gameObjects.delete(gameObject.id);
+            }
         }
     };
 
-    GameObjectManager.prototype.checkCollision = function (gameObject, targets) {	//todo refactor move to another module?
-		for (let target of targets) {
-			if (target.id === gameObject.id)
-				continue;
-			distance = Math.sqrt(Math.pow(target.x - gameObject.x, 2) + Math.pow(target.y - gameObject.y, 2));
-			if (distance < (target.sizeRadius * 0.5 + gameObject.sizeRadius * 0.5)) {
-				if (gameObject.name === 'arrow') {
-					gameObject.getState().destroy(gameObject);
-					target.getState().destroy(target);
-				}
-			}
-		}
-	}
-    
     return {
-        createGameObjectManager: function () {
+        create: function () {
             return new GameObjectManager();
         },
         GameObjectManager: GameObjectManager

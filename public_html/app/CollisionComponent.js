@@ -22,59 +22,63 @@
  * THE SOFTWARE.
  */
 
-define(function () {
+define(function (require) {
     function CollisionComponent() {
-        
+        var vectorAlgebraModule = require('vectorAlgebra');
+        this.vectors = vectorAlgebraModule.VectorAlgebra;
     }
 
-	CollisionComponent.prototype.resolveCollision = function (thisObject, hitObject, distance, seconds) {
-		
-		let direction = thisObject.motionDirection + Math.PI;
-		
-		while (direction < 0) {
-			direction += (2 * Math.PI);
-		}
-		
-		while (direction >= (2 * Math.PI)) {
-			direction -= (2 * Math.PI);
-		}
-		
-		while (Math.sqrt(Math.pow(thisObject.x - hitObject.x, 2) + Math.pow(thisObject.y - hitObject.y, 2)) < ((thisObject.sizeRadius + hitObject.sizeRadius) / 2)) {
-			thisObject.x += distance * Math.cos(direction) * 0.1;
-			thisObject.y += distance * Math.sin(direction) * 0.1;
-		};
-	};
-	
-	CollisionComponent.prototype.resolveCollisionWithWalls = function (object, map, seconds) {
-		let direction = object.motionDirection + Math.PI;
-		
-		while (direction < 0) {
-			direction += (2 * Math.PI);
-		}
-		
-		while (direction >= (2 * Math.PI)) {
-			direction -= (2 * Math.PI);
-		}
-		
-		/*while(! map.isEmptyCell(object.x + object.sizeRadius * Math.cos(object.motionDirection), object.y)) {
-			object.x += object.sizeRadius * Math.cos(direction) * 0.1;
-		}
-		
-		while(! map.isEmptyCell(object.x, object.y + object.sizeRadius * Math.sin(object.motionDirection))) {
-			object.y += object.sizeRadius * Math.sin(direction) * 0.1;
-		}*/
-		
-		while(! map.isEmptyCell(object.x + object.sizeRadius * Math.cos(object.motionDirection), object.y + object.sizeRadius * Math.sin(object.motionDirection))) {
-			if (map.isEmptyCell(object.x + object.sizeRadius * Math.cos(object.motionDirection), object.y))
-				object.y += object.sizeRadius * Math.sin(direction) * 0.1;
-				
-			if (map.isEmptyCell(object.x, object.y + object.sizeRadius * Math.sin(object.motionDirection)))
-				object.y += object.sizeRadius * Math.sin(direction) * 0.1;
-		}
-	};
-	
+    CollisionComponent.prototype.resolveCollision = function (thisObject, hitObject, distance, seconds, map) {
+
+        let reverseDirection = this.vectors.angle([hitObject.x - thisObject.x, hitObject.y - thisObject.y]);
+        reverseDirection += Math.PI;
+
+        while (reverseDirection < 0) {
+            reverseDirection += (2 * Math.PI);
+        }
+
+        while (reverseDirection >= (2 * Math.PI)) {
+            reverseDirection -= (2 * Math.PI);
+        }
+
+        if (map.isEmptyCell(thisObject.x + thisObject.sizeRadius * Math.cos(reverseDirection), thisObject.y)) {
+            thisObject.x += distance * Math.cos(reverseDirection);
+        }
+
+        if (map.isEmptyCell(thisObject.x, thisObject.y + thisObject.sizeRadius * Math.sin(reverseDirection))) {
+            thisObject.y += distance * Math.sin(reverseDirection);
+        }
+
+    };
+
+    CollisionComponent.prototype.resolveCollisionWithWalls = function (object, map, seconds) {
+
+        let motionDirection = object.motionDirection;
+        let reverseDirection = motionDirection + Math.PI;
+
+        while (reverseDirection < 0) {
+            reverseDirection += (2 * Math.PI);
+        }
+
+        while (reverseDirection >= (2 * Math.PI)) {
+            reverseDirection -= (2 * Math.PI);
+        }
+
+        while (!map.isEmptyCell(object.x + object.sizeRadius * Math.cos(motionDirection), object.y + object.sizeRadius * Math.sin(motionDirection))) {
+            if (!map.isEmptyCell(object.x + object.sizeRadius * Math.cos(motionDirection), object.y))
+                object.x += object.sizeRadius * Math.cos(reverseDirection) * 0.1;
+
+            if (!map.isEmptyCell(object.x, object.y + object.sizeRadius * Math.sin(motionDirection)))
+                object.y += object.sizeRadius * Math.sin(reverseDirection) * 0.1;
+        }
+    };
+
+    CollisionComponent.prototype.update = function (object, seconds) {
+
+    };
+
     return {
-        createCollisionComponent: function () {
+        create: function () {
             return new CollisionComponent();
         },
         CollisionComponent: CollisionComponent

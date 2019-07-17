@@ -25,8 +25,8 @@
 define(function (require) {
     function AiManager(player, gameObjectManager, map) {
         this.player = player;
-		this.gameObjectManager = gameObjectManager;
-		this.map = map;
+        this.gameObjectManager = gameObjectManager;
+        this.map = map;
         var vectorAlgebraModule = require('vectorAlgebra');
         this.vectors = vectorAlgebraModule.VectorAlgebra;
     }
@@ -53,19 +53,7 @@ define(function (require) {
 
             }
 
-            this.setStates(gameObject.getInputs(), states);
-        }
-    };
-
-    AiManager.prototype.setStates = function (inputs, states) {
-        for (let state in inputs.states) {
-            if (inputs.states.hasOwnProperty(state))
-                inputs.states[state] = false;
-        }
-
-        for (let state in states) {
-            if (states.hasOwnProperty(state))
-                inputs.states[state] = states[state];
+            gameObject.getInputs().setStates(states);
         }
     };
 
@@ -117,7 +105,7 @@ define(function (require) {
     };
 
     return {
-        createAiManager: function (player, gameObjectManager, map) {
+        create: function (player, gameObjectManager, map) {
             return new AiManager(player, gameObjectManager, map);
         },
         GameObjectManager: AiManager

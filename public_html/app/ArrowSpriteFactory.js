@@ -28,11 +28,11 @@ define(function (require) {
         let bitmapModule = require('./Bitmap');
         let spriteModule = require('./Sprite');
         let animationModule = require('./Animation');
-        let arrowSpriteSheet = bitmapModule.createBitmap('./img/arrowSpriteSheet.png', 64, 256, 64, 64);
+        let arrowSpriteSheet = bitmapModule.create('./img/arrowSpriteSheet.png', 64, 256, 64, 64);
 
         return function () {
-            let arrowSprite = spriteModule.createSprite('arrow', arrowSpriteSheet);
-            arrowSprite.addAnimation(animationModule.createAnimation('move', 2, 0, 1, 3, 1, 1, 0));
+            let arrowSprite = spriteModule.create('arrow', arrowSpriteSheet);
+            arrowSprite.addAnimation(animationModule.create('move', 2, 0, 1, 3, 1, 1, 0));
             arrowSprite.setCurrentAnimation('move');
 
             return arrowSprite;
@@ -40,7 +40,7 @@ define(function (require) {
     }
 
     return {
-        createArrowSpriteFactory: function () {
+        create: function () {
             return new ArrowSpriteFactory();
         },
         ArrowSpriteFactory: ArrowSpriteFactory

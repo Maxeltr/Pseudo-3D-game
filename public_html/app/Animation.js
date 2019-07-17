@@ -59,7 +59,7 @@ define(function () {
     };
 
     return {
-        createAnimation: function (animationName, spritesheetRowFrontSide, spritesheetRowBackSide, spritesheetRowLeftSide, spritesheetRowRightSide, frameAmount, animationSpeed, initialFrame) {
+        create: function (animationName, spritesheetRowFrontSide, spritesheetRowBackSide, spritesheetRowLeftSide, spritesheetRowRightSide, frameAmount, animationSpeed, initialFrame) {
             return new Animation(animationName, spritesheetRowFrontSide, spritesheetRowBackSide, spritesheetRowLeftSide, spritesheetRowRightSide, frameAmount, animationSpeed, initialFrame);
         },
         Animation: Animation

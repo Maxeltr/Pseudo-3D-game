@@ -89,7 +89,7 @@ define(function () {
     };
 
     return {
-		createMap: function() {
+		create: function() {
             return new Map();
         }
     };

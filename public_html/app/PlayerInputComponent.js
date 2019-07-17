@@ -62,8 +62,12 @@ define(function () {
         return buttons;
     };
 
+    PlayerInputComponent.prototype.setStates = function (states) {
+
+    };
+
     return {
-        createPlayerInputComponent: function (up, down, left, right, space) {
+        create: function (up, down, left, right, space) {
             return new PlayerInputComponent(up, down, left, right, space);
         },
         PlayerInputComponent: PlayerInputComponent

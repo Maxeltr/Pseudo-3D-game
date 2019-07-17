@@ -86,8 +86,8 @@ define(function () {
     Camera.prototype.drawObjectOnMap = function (object, map, color) {
         let hMapScaleRatio = this.width / map.width;
         let vMapScaleRatio = this.height / map.height;
-        let width = object.sizeRadius * hMapScaleRatio;
-        let height = object.sizeRadius * vMapScaleRatio;
+        let width = 2 * object.sizeRadius * hMapScaleRatio;
+        let height = 2 * object.sizeRadius * vMapScaleRatio;
         let centerX = object.x * hMapScaleRatio - width / 2;
         let centerY = object.y * vMapScaleRatio - height / 2;
 
@@ -159,7 +159,7 @@ define(function () {
             this.context.drawImage(
                     graphicsComponent.getImage(),
                     graphicsComponent.getImageX() + i * hObjectScaleRatio,
-                    graphicsComponent.getImageY(direction - object.direction),
+                    graphicsComponent.getImageY(object, x, y),
                     1,
                     graphicsComponent.getFrameHeight(),
                     hOffsetOnProjection + i,
@@ -227,7 +227,7 @@ define(function () {
 
 
     return {
-        createCamera: function (width, height) {
+        create: function (width, height) {
             return new Camera(width, height);
         }
     };

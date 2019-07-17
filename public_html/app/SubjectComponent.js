@@ -28,23 +28,23 @@ define(function () {
     }
 
     SubjectComponent.prototype.registerObserver = function (observer) {
-		this.observers[observer.id] = observer;
-	};
-	
-	SubjectComponent.prototype.removeObserver = function (observer) {
+        this.observers[observer.id] = observer;
+    };
+
+    SubjectComponent.prototype.removeObserver = function (observer) {
         delete this.observers[observer.id];
     };
 
-	SubjectComponent.prototype.notifyObservers = function (subject, event) {
+    SubjectComponent.prototype.notifyObservers = function (subject, event) {
         for (let observerId in this.observers) {
-			if (this.observers.hasOwnProperty(observerId)) {
-				this.observers[observerId].onNotify(subject, event);
-			}
-		}
+            if (this.observers.hasOwnProperty(observerId)) {
+                this.observers[observerId].onNotify(subject, event);
+            }
+        }
     };
-	
+
     return {
-        createSubjectComponent: function () {
+        create: function () {
             return new SubjectComponent();
         },
         SubjectComponent: SubjectComponent
