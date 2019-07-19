@@ -41,12 +41,12 @@ define(function () {
                 if (distance < radiuses) {
                     let resolveDistance = (gameObjects[i].sizeRadius + gameObjects[j].sizeRadius - distance) / radiuses;
                     if (gameObjects[i].sizeRadius > gameObjects[j].sizeRadius) {
-						gameObjects[i].getCollisions().resolveCollision(gameObjects[i], gameObjects[j], resolveDistance * gameObjects[j].sizeRadius, seconds, this.map);
-						gameObjects[j].getCollisions().resolveCollision(gameObjects[j], gameObjects[i], resolveDistance * gameObjects[i].sizeRadius, seconds, this.map);
-					} else {
+                        gameObjects[i].getCollisions().resolveCollision(gameObjects[i], gameObjects[j], resolveDistance * gameObjects[j].sizeRadius, seconds, this.map);
+                        gameObjects[j].getCollisions().resolveCollision(gameObjects[j], gameObjects[i], resolveDistance * gameObjects[i].sizeRadius, seconds, this.map);
+                    } else {
                         gameObjects[i].getCollisions().resolveCollision(gameObjects[i], gameObjects[j], resolveDistance * gameObjects[i].sizeRadius, seconds, this.map);
-						gameObjects[j].getCollisions().resolveCollision(gameObjects[j], gameObjects[i], resolveDistance * gameObjects[j].sizeRadius, seconds, this.map);
-					}
+                        gameObjects[j].getCollisions().resolveCollision(gameObjects[j], gameObjects[i], resolveDistance * gameObjects[j].sizeRadius, seconds, this.map);
+                    }
                 }
             }
 

@@ -50,7 +50,7 @@ define(function () {
     };
 
     AiInputComponent.prototype.setStates = function (states) {
-		for (let state in this.states) {
+        for (let state in this.states) {
             if (this.states.hasOwnProperty(state))
                 this.states[state] = false;
         }
@@ -59,8 +59,7 @@ define(function () {
             if (states.hasOwnProperty(state))
                 this.states[state] = states[state];
         }
-	};
-
+    };
 
     return {
         create: function (up, down, left, right, space) {

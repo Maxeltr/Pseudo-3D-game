@@ -31,14 +31,17 @@ define(function () {
     }
 
     GameLoop.prototype.start = function (callback) {
+        if (this.requestId)
+            this.stop();
         this.callback = callback;
         this.requestId = requestAnimationFrame(this.frame);
     };
-    
+
     GameLoop.prototype.stop = function () {
-        cancelAnimationFrame(this.requestId);
+        if (this.requestId)
+            cancelAnimationFrame(this.requestId);
     };
-    
+
     GameLoop.prototype.frame = function (time) {
         let seconds = (time - this.lastTime) / 1000;
         this.lastTime = time;
@@ -51,7 +54,7 @@ define(function () {
 
 
     return {
-		create: function() {
+        create: function () {
             return new GameLoop();
         }
     };

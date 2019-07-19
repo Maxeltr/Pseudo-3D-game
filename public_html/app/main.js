@@ -26,18 +26,21 @@ define(function (require) {
     // Load any app-specific modules
     // with a relative require call,
     // like:
-    var gameStateModule = require('./GameState');
-
+    let gameStateModule = require('./GameState');
+    let gameModule = require('./Game');
     // Load library/vendor modules using
     // full IDs, like:
     //var print = require('print');
 
-    var gameState = gameStateModule.createStateContainer().getStartState();
+    let game = gameModule.create();
 
-    gameState = gameState.play();
-    //gameState = gameState.pause();
-    //gameState = gameState.loose();
-    //gameState = gameState.win();
+    game.setState(gameStateModule.createStateContainer().getNullState());
+
+    game.getState().start(game);
+    game.getState().play(game);
+    //game.getState().pause(game);
+    //game.getState().loose(game);
+    //game.getState().win();
 
 
 });

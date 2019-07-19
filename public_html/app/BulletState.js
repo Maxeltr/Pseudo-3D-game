@@ -78,7 +78,7 @@ define(function () {
         this.name = 'STATE_DESTROY';
 
         this.destroy = function (object, seconds) {
-            
+
         };
 
         this.move = function (object, seconds) {
@@ -88,9 +88,9 @@ define(function () {
         this.update = function (object, seconds) {
             if (!object.getGraphics().isLastFrame()) {
                 object.getGraphics().update(object, seconds);
-			} else {
-				object.destroy = true;
-			}
+            } else {
+                object.destroy = true;
+            }
             object.getCollisions().update(object, seconds);
         };
     }

@@ -57,7 +57,7 @@ define(function (require) {
                     );
 
             gameObject.name = 'orc';
-            gameObject.sizeRadius = 0.2;
+            gameObject.sizeRadius = 0.15;
 
             return gameObject;
         };

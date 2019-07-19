@@ -33,11 +33,11 @@ define(function (require) {
         let gameObjectModule = require('./GameObject');
         var commandModule = require('./Command');
         let nullWeaponModule = require('./NullWeaponComponent');
-		let nullSubjectModule = require('./NullSubjectComponent');
+        let nullSubjectModule = require('./NullSubjectComponent');
         let collisionModule = require('./DestructionCollisionComponent');
-        
+
         let arrowSpriteFactory = arrowSpriteFactoryModule.create();
-        
+
         return function () {
             let gameObject = gameObjectModule.create(
                     physicsComponentModule.create(),
@@ -45,13 +45,13 @@ define(function (require) {
                     forcedMoveInputComponentModule.create(new commandModule.MoveForwardCommand()),
                     stateModule.createStateContainer().getMoveState(),
                     nullWeaponModule.create(),
-					nullSubjectModule.create(),
-					collisionModule.create()
+                    nullSubjectModule.create(),
+                    collisionModule.create()
                     );
 
             gameObject.name = 'arrow';
             gameObject.sizeRadius = 0.015;
-			gameObject.damage = 0.0;
+            gameObject.damage = 0.0;
 
             return gameObject;
         };

@@ -41,7 +41,7 @@ define(function () {
         this.inputComponent = inputComponent;
         this.stateComponent = stateComponent;
         this.weaponComponent = weaponComponent;
-		this.subjectComponent = subjectComponent;
+        this.subjectComponent = subjectComponent;
         this.collisionComponent = collisionComponent;
         this.paces = 0;
         this.sightDistance = 4.0;
@@ -91,15 +91,15 @@ define(function () {
     GameObject.prototype.getWeapons = function () {
         return this.weaponComponent;
     };
-	
-	GameObject.prototype.getSubject = function () {
+
+    GameObject.prototype.getSubject = function () {
         return this.subjectComponent;
     };
-    
+
     GameObject.prototype.getCollisions = function () {
         return this.collisionComponent;
     };
-    
+
     return {
         create: function (physicsComponent, graphicsComponent, inputComponent, stateComponent, weaponComponent, subjectComponent, collisionComponent) {
             return new GameObject(physicsComponent, graphicsComponent, inputComponent, stateComponent, weaponComponent, subjectComponent, collisionComponent);

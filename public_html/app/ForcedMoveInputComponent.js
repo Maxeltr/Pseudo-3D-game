@@ -36,7 +36,7 @@ define(function () {
 
     ForcedMoveInputComponent.prototype.setStates = function (states) {
 
-	};
+    };
 
     return {
         create: function (command) {
