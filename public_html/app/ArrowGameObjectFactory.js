@@ -51,7 +51,7 @@ define(function (require) {
 
             gameObject.name = 'arrow';
             gameObject.sizeRadius = 0.015;
-            gameObject.damage = 0.0;
+            gameObject.damage = 100.0;
 
             return gameObject;
         };

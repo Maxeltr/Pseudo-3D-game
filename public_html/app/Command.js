@@ -23,6 +23,14 @@
  */
 
 define(function () {
+    function NullCommand() {
+        this.name = 'NullCommand';
+    }
+
+    NullCommand.prototype.execute = function (actor, seconds) {
+
+    };
+
     function MoveForwardCommand() {
         this.name = 'Forward';
     }
@@ -73,6 +81,7 @@ define(function () {
         MoveBackwardCommand: MoveBackwardCommand,
         RotateLeftCommand: RotateLeftCommand,
         RotateRightCommand: RotateRightCommand,
-        ShootCommand: ShootCommand
+        ShootCommand: ShootCommand,
+        NullCommand: NullCommand
     };
 });

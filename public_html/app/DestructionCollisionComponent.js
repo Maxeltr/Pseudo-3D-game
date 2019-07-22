@@ -38,7 +38,7 @@ define(function () {
         }
     };
 
-    DestructionCollisionComponent.prototype.resolveCollisionWithWalls = function (object, map, seconds, map) {
+    DestructionCollisionComponent.prototype.resolveCollisionWithWalls = function (object, map, seconds) {
         if (this._isActivate()) {
             object.getState().destroy(object, seconds);
         }

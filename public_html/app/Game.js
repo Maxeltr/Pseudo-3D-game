@@ -26,9 +26,26 @@ define(function (require) {
     function Game() {
         this.state;
         this.inputHandlers = [];
+        this.codes = {'Escape': 27, 'Enter': 13};
+
+        Game.prototype.getState = function () {
+            return this.state;
+        };
+
+        Game.prototype.setState = function (state) {
+            this.state = state;
+        };
 
         this.addInputHandler = function (handler) {
-            this.inputHandlers.push(handler);
+            let onKey = function (e) {
+                if (e.keyCode === this.codes[handler.name]) {
+                    handler(this);
+                }
+                e.preventDefault && e.preventDefault();
+                e.stopPropagation && e.stopPropagation();
+            }.bind(this);
+            document.addEventListener('keyup', onKey, false);
+            this.inputHandlers.push(onKey);
         };
 
         this.removeInputHandlers = function () {
@@ -77,7 +94,7 @@ define(function (require) {
         this.startLoop = function (seconds) {
             this.playerCamera.context.fillStyle = "red";
             this.playerCamera.context.font = "24px serif";
-            this.playerCamera.context.fillText('start', 15, 20);
+            this.playerCamera.context.fillText('Press start', 15, 20);
         }.bind(this);
 
         this.playLoop = function (seconds) {
@@ -85,7 +102,13 @@ define(function (require) {
             this.gameObjectManager.update(seconds);
             this.collisionDetector.update(seconds);
 
+            let player = this.gameObjectManager.getPlayer();
+            if (!player)
+                this.getState().loose(this);
+
             let npcArr = this.gameObjectManager.getArrayObjects();
+            if (npcArr.length === 1 && npcArr[0].name === 'player')
+                this.getState().win(this);
 
             this.playerCamera.clearScreen();
             this.playerCamera.drawBackground(this.background, this.player.direction);
@@ -125,24 +148,18 @@ define(function (require) {
         }.bind(this);
 
         this.looseLoop = function (seconds) {
+            this.playerCamera.clearScreen();
             this.playerCamera.context.fillStyle = "red";
             this.playerCamera.context.font = "24px serif";
             this.playerCamera.context.fillText('loose', 15, 20);
         }.bind(this);
 
         this.winLoop = function (seconds) {
+            this.playerCamera.clearScreen();
             this.playerCamera.context.fillStyle = "red";
             this.playerCamera.context.font = "24px serif";
             this.playerCamera.context.fillText('win', 15, 20);
         }.bind(this);
-
-        Game.prototype.getState = function () {
-            return this.state;
-        };
-
-        Game.prototype.setState = function (state) {
-            this.state = state;
-        };
     }
 
 

@@ -59,7 +59,7 @@ define(function (require) {
 
         this.gameObjects.set(gameObject.id, gameObject);
 
-        if (factoryName = 'player')
+        if (factoryName === 'player')
             this.playerId = gameObject.id;
 
         return gameObject;

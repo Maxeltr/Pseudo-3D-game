@@ -37,7 +37,7 @@ define(function (require) {
     game.setState(gameStateModule.createStateContainer().getNullState());
 
     game.getState().start(game);
-    game.getState().play(game);
+    //game.getState().play(game);
     //game.getState().pause(game);
     //game.getState().loose(game);
     //game.getState().win();

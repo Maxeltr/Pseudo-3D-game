@@ -36,7 +36,7 @@ define(function (require) {
             orcSprite.addAnimation(animationModule.create('move', 10, 8, 9, 11, 9, 10, 0));
             orcSprite.addAnimation(animationModule.create('getWeapons', 18, 16, 17, 19, 4, 3, 0));
             orcSprite.addAnimation(animationModule.create('shoot', 18, 16, 17, 19, 11, 4, 4));
-            orcSprite.addAnimation(animationModule.create('destroy', 20, 20, 20, 20, 6, 0.5, 0));
+            orcSprite.addAnimation(animationModule.create('destroy', 20, 20, 20, 20, 6, 6, 0));
             orcSprite.setCurrentAnimation('stop');
 
             return orcSprite;

@@ -47,7 +47,8 @@ define(function (require) {
                             new commandModule.MoveBackwardCommand(),
                             new commandModule.RotateLeftCommand(),
                             new commandModule.RotateRightCommand(),
-                            new commandModule.ShootCommand()
+                            new commandModule.ShootCommand(),
+                            new commandModule.NullCommand()
                             ),
                     stateModule.createStateContainer().getStopState(),
                     weaponModule.create(),
@@ -56,6 +57,7 @@ define(function (require) {
                     );
 
             gameObject.name = 'player';
+            gameObject.health = 10000000.0;
 
             return gameObject;
         };

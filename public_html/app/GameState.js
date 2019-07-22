@@ -66,36 +66,27 @@ define(function (require) {
         game.removeInputHandlers();
         game.loop.start(game.startLoop);
         game.setState(this.container.getStartState());
+        game.addInputHandler(function Enter(game) {
+            game.getState().play(game);
+        });
     };
 
     State.prototype.play = function (game) {
         game.removeInputHandlers();
         game.loop.start(game.playLoop);
         game.setState(this.container.getPlayState());
-        let handler = function (e) {
-            if (e.keyCode === 27) {
-                game.getState().pause(game);
-            }
-            e.preventDefault && e.preventDefault();
-            e.stopPropagation && e.stopPropagation();
-        }.bind(this);
-        document.addEventListener('keyup', handler, false);
-        game.addInputHandler(handler);
+        game.addInputHandler(function Escape(game) {
+            game.getState().pause(game);
+        });
     };
 
     State.prototype.pause = function (game) {
         game.removeInputHandlers();
         game.loop.start(game.pauseLoop);
         game.setState(this.container.getPauseState());
-        let handler = function (e) {
-            if (e.keyCode === 27) {
-                game.getState().play(game);
-            }
-            e.preventDefault && e.preventDefault();
-            e.stopPropagation && e.stopPropagation();
-        }.bind(this);
-        document.addEventListener('keyup', handler, false);
-        game.addInputHandler(handler);
+        game.addInputHandler(function Escape(game) {
+            game.getState().play(game);
+        });
     };
 
     State.prototype.loose = function (game) {

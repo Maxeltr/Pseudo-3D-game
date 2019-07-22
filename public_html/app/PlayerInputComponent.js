@@ -23,14 +23,15 @@
  */
 
 define(function () {
-    function PlayerInputComponent(up, down, left, right, space) {
-        this.codes = {37: 'left', 39: 'right', 38: 'forward', 40: 'backward', 32: 'space'};
-        this.states = {'left': false, 'right': false, 'forward': false, 'backward': false, 'space': false};		//button states
+    function PlayerInputComponent(up, down, left, right, space, escape) {
+        this.codes = {37: 'left', 39: 'right', 38: 'forward', 40: 'backward', 32: 'space', 27: 'escape'};
+        this.states = {'left': false, 'right': false, 'forward': false, 'backward': false, 'space': false, 'escape': false};		//button states
         this.buttonUp = up;
         this.buttonDown = down;
         this.buttonLeft = left;
         this.buttonRight = right;
         this.buttonSpace = space;
+        this.buttonEscape = escape;
 
         document.addEventListener('keydown', this._onKey.bind(this, true), false);
         document.addEventListener('keyup', this._onKey.bind(this, false), false);
@@ -58,6 +59,8 @@ define(function () {
             buttons.push(this.buttonDown);
         if (this.states.space)
             buttons.push(this.buttonSpace);
+        if (this.states.escape)
+            buttons.push(this.buttonEscape);
 
         return buttons;
     };
@@ -67,8 +70,8 @@ define(function () {
     };
 
     return {
-        create: function (up, down, left, right, space) {
-            return new PlayerInputComponent(up, down, left, right, space);
+        create: function (up, down, left, right, space, escape) {
+            return new PlayerInputComponent(up, down, left, right, space, escape);
         },
         PlayerInputComponent: PlayerInputComponent
     };
