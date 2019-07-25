@@ -93,12 +93,18 @@ define(function (require) {
         game.removeInputHandlers();
         game.loop.start(game.looseLoop);
         game.setState(this.container.getLooseState());
+        game.addInputHandler(function Escape(game) {
+            game.getState().start(game);
+        });
     };
 
     State.prototype.win = function (game) {
         game.removeInputHandlers();
         game.loop.start(game.winLoop);
         game.setState(this.container.getWinState());
+        game.addInputHandler(function Escape(game) {
+            game.getState().start(game);
+        });
     };
 
     function StartState(container) {

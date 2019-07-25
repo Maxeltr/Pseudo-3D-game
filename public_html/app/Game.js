@@ -85,16 +85,19 @@ define(function (require) {
         this.gameObjectManager.create('orc', 7, 8, 0.8);
         this.gameObjectManager.create('orc', 3, 5, 0);
 
-        this.player = this.gameObjectManager.create('player', 7, 2.7, 3.14);
+        let player = this.gameObjectManager.create('player', 7, 2.7, 3.14);
 
-        this.aiManager = aiManagerModule.create(this.player, this.gameObjectManager, this.map);
+        this.aiManager = aiManagerModule.create(player, this.gameObjectManager, this.map);
 
         this.collisionDetector = collisionDetectorModule.create(this.gameObjectManager, this.map);
 
         this.startLoop = function (seconds) {
+            this.playerCamera.clearScreen();
+            this.playerCamera.context.save();
             this.playerCamera.context.fillStyle = "red";
             this.playerCamera.context.font = "24px serif";
             this.playerCamera.context.fillText('Press start', 15, 20);
+            this.playerCamera.context.restore();
         }.bind(this);
 
         this.playLoop = function (seconds) {
@@ -111,54 +114,58 @@ define(function (require) {
                 this.getState().win(this);
 
             this.playerCamera.clearScreen();
-            this.playerCamera.drawBackground(this.background, this.player.direction);
-            this.playerCamera.drawWalls(this.player.x, this.player.y, this.player.direction, this.player.fov, this.map, this.walls);
-            this.playerCamera.drawObjects(npcArr, this.player.x + 0.1 * Math.cos(this.player.direction), this.player.y + 0.1 * Math.sin(this.player.direction), this.player.direction, this.player.fov);
-
+            this.playerCamera.drawBackground(this.background, player.direction);
+            this.playerCamera.drawWalls(player.x, player.y, player.direction, player.fov, this.map, this.walls);
+            this.playerCamera.drawObjects(npcArr, player.x + 0.1 * Math.cos(player.direction), player.y + 0.1 * Math.sin(player.direction), player.direction, player.fov);
+            this.playerCamera.drawMiniMap(player.x, player.y, player.direction, player.sizeRadius, this.playerCamera.width / 5, this.map, 'grey');
 
             this.mapScreen.clearScreen();
             this.mapScreen.drawMap(this.map, 'grey');
             this.mapScreen.drawObjectsOnMap(npcArr, this.map, 'blue');
             this.mapScreen.drawFovsOnMap(npcArr, this.map, 'blue');
-            this.mapScreen.drawObjectOnMap(this.player, this.map, 'grayish');
-            this.mapScreen.drawFovOnMap(this.player, this.map, 'grey');
+            this.mapScreen.drawObjectOnMap(player, this.map, 'grayish');
+            this.mapScreen.drawFovOnMap(player, this.map, 'grey');
 
         }.bind(this);
 
         this.pauseLoop = function (seconds) {
             let npcArr = this.gameObjectManager.getArrayObjects();
+            let player = this.gameObjectManager.getPlayer();
 
             this.playerCamera.clearScreen();
-            this.playerCamera.drawBackground(this.background, this.player.direction);
-            this.playerCamera.drawWalls(this.player.x, this.player.y, this.player.direction, this.player.fov, this.map, this.walls);
-            this.playerCamera.drawObjects(npcArr, this.player.x + 0.1 * Math.cos(this.player.direction), this.player.y + 0.1 * Math.sin(this.player.direction), this.player.direction, this.player.fov);
-
+            this.playerCamera.drawMap(this.map, 'grey');
+            this.playerCamera.drawObjectOnMap(player, this.map, 'grayish');
 
             this.mapScreen.clearScreen();
             this.mapScreen.drawMap(this.map, 'grey');
             this.mapScreen.drawObjectsOnMap(npcArr, this.map, 'blue');
             this.mapScreen.drawFovsOnMap(npcArr, this.map, 'blue');
-            this.mapScreen.drawObjectOnMap(this.player, this.map, 'grayish');
-            this.mapScreen.drawFovOnMap(this.player, this.map, 'grey');
+            this.mapScreen.drawObjectOnMap(player, this.map, 'grayish');
+            this.mapScreen.drawFovOnMap(player, this.map, 'grey');
 
+            this.playerCamera.context.save();
             this.playerCamera.context.fillStyle = "red";
             this.playerCamera.context.font = "24px serif";
             this.playerCamera.context.fillText('PAUSE', 15, 20);
-
+            this.playerCamera.context.restore();
         }.bind(this);
 
         this.looseLoop = function (seconds) {
             this.playerCamera.clearScreen();
+            this.playerCamera.context.save();
             this.playerCamera.context.fillStyle = "red";
             this.playerCamera.context.font = "24px serif";
             this.playerCamera.context.fillText('loose', 15, 20);
+            this.playerCamera.context.restore();
         }.bind(this);
 
         this.winLoop = function (seconds) {
             this.playerCamera.clearScreen();
+            this.playerCamera.context.save();
             this.playerCamera.context.fillStyle = "red";
             this.playerCamera.context.font = "24px serif";
             this.playerCamera.context.fillText('win', 15, 20);
+            this.playerCamera.context.restore();
         }.bind(this);
     }
 

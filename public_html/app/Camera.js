@@ -70,6 +70,113 @@ define(function () {
         this.context.restore();
     };
 
+    Camera.prototype.drawMiniMap = function (x, y, direction, objectRadius, diameter, map, color) {
+        let cx, cy;
+        let scaleRatio = diameter / Math.max(map.width, map.height);
+        let radius = diameter / 2;
+
+        let canvas = document.createElement('canvas');
+        canvas.height = diameter;
+        canvas.width = diameter;
+        let ctx = canvas.getContext("2d");
+
+        ctx.fillStyle = color;
+
+        ctx.arc(radius, radius, radius, 0, 2 * Math.PI);
+        ctx.clip();
+
+        ctx.globalAlpha = 0.5;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+
+        ctx.beginPath();
+        ctx.arc(radius, radius, objectRadius * scaleRatio, 0, 2 * Math.PI);
+        ctx.stroke();
+
+        ctx.translate(radius, radius);
+        ctx.rotate(-(direction + Math.PI / 2));
+
+        ctx.scale(map.width / 16, map.height / 16);    //if map size is 16, then don't zoom, if map 32 - increase in 2 times
+
+        for (let j = 0; j < diameter; j++) {
+            cy = Math.floor((y + j / scaleRatio) - map.height / 2);
+
+            if (cy < 0)
+                continue;
+            if (cy >= map.height)
+                break;
+
+            for (let i = 0; i < diameter; i++) {
+                cx = Math.floor((x + i / scaleRatio) - map.width / 2);
+
+                if (cx < 0)
+                    continue;
+                if (cx >= map.width)
+                    break;
+
+                if (map.walls[cx + cy * map.width] === undefined)
+                    continue;
+
+                ctx.fillRect(i - radius, j - radius, 1, 1);
+            }
+        }
+
+        this.context.drawImage(canvas, 0, 0);
+    };
+
+    Camera.prototype._drawMiniMap = function (x, y, direction, objectRadius, diameter, map, color) {
+        let cx, cy;
+        let scaleRatio = diameter / Math.max(map.width, map.height);
+        let radius = diameter / 2;
+
+        this.context.save();
+
+        this.context.fillStyle = color;
+
+        this.context.translate(radius, radius);
+        this.context.rotate(-(direction + Math.PI / 2));
+
+        this.context.globalAlpha = 0.5;
+
+        this.context.arc(0, 0, radius, 0, 2 * Math.PI);
+        this.context.fill();
+        this.context.clip();
+
+        this.context.globalAlpha = 1;
+
+        this.context.scale(map.width / 16, map.height / 16);
+
+        for (let j = 0; j < diameter; j++) {
+            cy = Math.floor((y + j / scaleRatio) - map.height / 2);
+
+            if (cy < 0)
+                continue;
+            if (cy >= map.height)
+                break;
+
+            for (let i = 0; i < diameter; i++) {
+                cx = Math.floor((x + i / scaleRatio) - map.width / 2);
+
+                if (cx < 0)
+                    continue;
+                if (cx >= map.width)
+                    break;
+
+                if (map.walls[cx + cy * map.width] === undefined)
+                    continue;
+
+                this.context.fillRect(i - radius, j - radius, 1, 1);
+            }
+        }
+
+        this.context.beginPath();
+        this.context.arc(0, 0, objectRadius * scaleRatio, 0, 2 * Math.PI);
+        this.context.stroke();
+
+        this.context.setTransform(1, 0, 0, 1, 0, 0);
+        this.context.restore();
+    };
+
     Camera.prototype.drawRect = function (x, y, width, height, color) {
         this.context.save();
         this.context.fillStyle = color;
