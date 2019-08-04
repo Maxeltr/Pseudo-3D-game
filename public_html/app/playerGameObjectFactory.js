@@ -57,8 +57,9 @@ define(function (require) {
                     );
 
             gameObject.name = 'player';
-            gameObject.health = 10000000.0;
-
+            gameObject.health = 100.0;
+            gameObject.sizeRadius = 0.2;
+            
             return gameObject;
         };
     }

@@ -59,6 +59,11 @@ define(function () {
         return !this.map.isEmptyCell(
                 object.x + object.sizeRadius * Math.cos(object.motionDirection),
                 object.y + object.sizeRadius * Math.sin(object.motionDirection)
+                ) 
+                || 
+                !this.map.isEmptyCell(
+                object.x,
+                object.y  
                 );
     };
 

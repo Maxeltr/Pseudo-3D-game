@@ -35,7 +35,7 @@ define(function () {
         this.sizeRadius = 0.2;
         this.destroy = false;
         this.movementVelocity = 3;
-        this.rotationVelocity = Math.PI;
+        this.rotationVelocity = Math.PI / 3;
         this.physicsComponent = physicsComponent;
         this.graphicsComponent = graphicsComponent;
         this.inputComponent = inputComponent;

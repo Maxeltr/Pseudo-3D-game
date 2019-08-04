@@ -64,8 +64,9 @@ define(function (require) {
 
         this.loop = require('./GameLoop').create();
 
-        this.background = bitmapModule.create('./img/sky_daytime_blue.jpg', 2048, 1024, 2048, 1024);
-        this.walls = bitmapModule.create('./img/textures.png', 384, 64, 64, 64);
+        this.background = bitmapModule.create('http://blog-note3/img/game/sky_daytime_blue.jpg', 2048, 1024, 2048, 1024);
+        //this.walls = bitmapModule.create('http://blog-note3/img/game/textures.png', 384, 64, 64, 64);
+        this.walls = bitmapModule.create('http://blog-note3/img/game/walls.png', 2560, 640, 640, 640);
 
         this.playerCamera = cameraModule.create(1024, 512);
         this.playerCamera.setCanvas(document.getElementById("3DView"));
@@ -106,9 +107,11 @@ define(function (require) {
             this.collisionDetector.update(seconds);
 
             let player = this.gameObjectManager.getPlayer();
-            if (!player)
+            if (!player) {
                 this.getState().loose(this);
-
+                return;
+            }
+            
             let npcArr = this.gameObjectManager.getArrayObjects();
             if (npcArr.length === 1 && npcArr[0].name === 'player')
                 this.getState().win(this);
@@ -118,13 +121,15 @@ define(function (require) {
             this.playerCamera.drawWalls(player.x, player.y, player.direction, player.fov, this.map, this.walls);
             this.playerCamera.drawObjects(npcArr, player.x + 0.1 * Math.cos(player.direction), player.y + 0.1 * Math.sin(player.direction), player.direction, player.fov);
             this.playerCamera.drawMiniMap(player.x, player.y, player.direction, player.sizeRadius, this.playerCamera.width / 5, this.map, 'grey');
+            this.playerCamera.drawHealthBar(player.health, 'grey');
+            this.playerCamera.drawAim(5, 'red');                                    
 
             this.mapScreen.clearScreen();
             this.mapScreen.drawMap(this.map, 'grey');
-            this.mapScreen.drawObjectsOnMap(npcArr, this.map, 'blue');
+            this.mapScreen.drawObjectsOnMap(npcArr, this.map, 'red');
             this.mapScreen.drawFovsOnMap(npcArr, this.map, 'blue');
-            this.mapScreen.drawObjectOnMap(player, this.map, 'grayish');
-            this.mapScreen.drawFovOnMap(player, this.map, 'grey');
+            this.mapScreen.drawObjectOnMap(player, this.map, 'yellow');
+            this.mapScreen.drawFovOnMap(player, this.map, 'yellow');
 
         }.bind(this);
 
@@ -138,10 +143,10 @@ define(function (require) {
 
             this.mapScreen.clearScreen();
             this.mapScreen.drawMap(this.map, 'grey');
-            this.mapScreen.drawObjectsOnMap(npcArr, this.map, 'blue');
+            this.mapScreen.drawObjectsOnMap(npcArr, this.map, 'red');
             this.mapScreen.drawFovsOnMap(npcArr, this.map, 'blue');
-            this.mapScreen.drawObjectOnMap(player, this.map, 'grayish');
-            this.mapScreen.drawFovOnMap(player, this.map, 'grey');
+            this.mapScreen.drawObjectOnMap(player, this.map, 'yellow');
+            this.mapScreen.drawFovOnMap(player, this.map, 'yellow');
 
             this.playerCamera.context.save();
             this.playerCamera.context.fillStyle = "red";

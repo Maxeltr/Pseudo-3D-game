@@ -71,6 +71,11 @@ define(function (require) {
             if (!map.isEmptyCell(object.x, object.y + object.sizeRadius * Math.sin(motionDirection)))
                 object.y += object.sizeRadius * Math.sin(reverseDirection) * 0.1;
         }
+        
+        while (!map.isEmptyCell(object.x, object.y)) {
+            object.x += object.sizeRadius * Math.cos(reverseDirection) * 0.1;
+            object.y += object.sizeRadius * Math.sin(reverseDirection) * 0.1;
+        }
     };
 
     CollisionComponent.prototype.update = function (object, seconds) {
