@@ -81,7 +81,8 @@ define(function () {
         this.idleTime;
 
         this.stop = function (object, seconds) {
-
+            object.currentSpeed = 0.0;
+            object.currentRotationSpeed = 0.0;
         };
 
         this.update = function (object, seconds) {

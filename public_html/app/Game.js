@@ -64,9 +64,9 @@ define(function (require) {
 
         this.loop = require('./GameLoop').create();
 
-        this.background = bitmapModule.create('http://blog-note3/img/game/sky_daytime_blue.jpg', 2048, 1024, 2048, 1024);
-        //this.walls = bitmapModule.create('http://blog-note3/img/game/textures.png', 384, 64, 64, 64);
-        this.walls = bitmapModule.create('http://blog-note3/img/game/walls.png', 2560, 640, 640, 640);
+        this.background = bitmapModule.create('./img/sky_daytime_blue.jpg', 2048, 1024, 2048, 1024);
+        //this.walls = bitmapModule.create('./img/textures.png', 384, 64, 64, 64);
+        this.walls = bitmapModule.create('./img/walls.png', 2560, 640, 640, 640);
 
         this.playerCamera = cameraModule.create(1024, 512);
         this.playerCamera.setCanvas(document.getElementById("3DView"));
@@ -86,7 +86,7 @@ define(function (require) {
         this.gameObjectManager.create('orc', 7, 8, 0.8);
         this.gameObjectManager.create('orc', 3, 5, 0);
 
-        let player = this.gameObjectManager.create('player', 7, 2.7, 3.14);
+        let player = this.gameObjectManager.create('player', 20, 4, 3.14);
 
         this.aiManager = aiManagerModule.create(player, this.gameObjectManager, this.map);
 
