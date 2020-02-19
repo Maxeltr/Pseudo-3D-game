@@ -35,6 +35,9 @@ define(function (require) {
         let target = this.player;
 
         for (let gameObject of this.gameObjectManager.getArrayObjects()) {
+            if (gameObject.type !== 'npc')
+                continue;
+
             let states = {};
             if (this.checkSight(target, gameObject, this.map)) {
                 let distanceToTarget = Math.sqrt(Math.pow(target.x - gameObject.x, 2) + Math.pow(target.y - gameObject.y, 2));
