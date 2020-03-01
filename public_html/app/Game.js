@@ -86,6 +86,9 @@ define(function (require) {
         this.gameObjectManager.create('orc', 7, 8, 0.8);
         this.gameObjectManager.create('orc', 3, 5, 0);
 
+        let orc = this.gameObjectManager.create('orc', 10, 10, 0);
+        orc.waypoints.set([[3, 3], [7, 7], [2, 5], [5, 2], [10, 10]]);
+
         let player = this.gameObjectManager.create('player', 20, 4, 3.14);
 
         this.aiManager = aiManagerModule.create(player, this.gameObjectManager, this.map);
@@ -111,7 +114,7 @@ define(function (require) {
                 this.getState().loose(this);
                 return;
             }
-            
+
             let npcArr = this.gameObjectManager.getArrayObjects();
             if (npcArr.length === 1 && npcArr[0].name === 'player')
                 this.getState().win(this);
@@ -122,7 +125,7 @@ define(function (require) {
             this.playerCamera.drawObjects(npcArr, player.x + 0.1 * Math.cos(player.direction), player.y + 0.1 * Math.sin(player.direction), player.direction, player.fov);
             this.playerCamera.drawMiniMap(player.x, player.y, player.direction, player.sizeRadius, this.playerCamera.width / 5, this.map, 'grey');
             this.playerCamera.drawHealthBar(player.health, 'grey');
-            this.playerCamera.drawAim(5, 'red');                                    
+            this.playerCamera.drawAim(5, 'red');
 
             this.mapScreen.clearScreen();
             this.mapScreen.drawMap(this.map, 'grey');

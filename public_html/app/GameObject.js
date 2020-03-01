@@ -53,6 +53,30 @@ define(function () {
         this.damage = 0.0;
         this.currentMoveSpeed = 0.0;
         this.currentRotationSpeed = 0.0;
+        this.waypoints = {
+            waypoints: [], nextIndex: 0,
+            set: function (waypoints) {
+                this.waypoints = waypoints;
+            },
+
+            next: function () {
+                if (this.nextIndex < this.waypoints.length) {
+                    return this.waypoints[this.nextIndex++];
+                }
+            },
+
+            current: function () {
+                return this.waypoints[this.nextIndex];
+            },
+
+            rewind: function () {
+                this.nextIndex = 0;
+            },
+
+            reverse: function () {
+                this.waypoints.reverse();
+            }
+        };
     }
 
     GameObject.prototype.update = function (seconds) {
